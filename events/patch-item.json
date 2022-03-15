@@ -1,12 +1,12 @@
 {
-  "body": "[{\"op\":\"replace\",\"path\":\"/url\",\"value\":\"https://bowland.link/\"}]",
+  "body": "[{\"op\":\"replace\",\"path\":\"/address\",\"value\":\"90036\"}]",
   "pathParameters": {
     "sessionId": "abc123"
   },
   "requestContext": {
     "http": {
       "method": "PATCH",
-      "path": "/v1/choosee"
+      "path": "/v1/choosee/abc123"
     }
   }
 }

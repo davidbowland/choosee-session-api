@@ -1,4 +1,4 @@
-import { geocodeResult, placeResult } from '../__mocks__'
+import { geocodeResult, placeResponse, placeResult } from '../__mocks__'
 import { googleApiKey, googleTimeoutMs } from '@config'
 import { fetchGeocodeResults, fetchPlaceResults } from '@services/google-maps'
 
@@ -41,7 +41,7 @@ describe('queue', () => {
     const radius = 50_000
 
     beforeAll(() => {
-      mockPlacesNearby.mockResolvedValue(placeResult)
+      mockPlacesNearby.mockResolvedValue(placeResponse)
     })
 
     test('expect parameters passed to placesNearby', async () => {
@@ -61,6 +61,13 @@ describe('queue', () => {
     test('expect results returned', async () => {
       const result = await fetchPlaceResults(location, type, radius)
       expect(result).toEqual(placeResult)
+    })
+
+    test('expect undefined for missing values', async () => {
+      const place = { ...placeResponse.data.results[0], opening_hours: undefined, photos: undefined }
+      mockPlacesNearby.mockResolvedValueOnce({ ...placeResponse, data: { results: [place] } })
+      const result = await fetchPlaceResults(location, type, radius)
+      expect(result).toEqual({ data: [{ ...placeResult.data[0], pic: undefined }] })
     })
   })
 })

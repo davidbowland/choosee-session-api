@@ -2,16 +2,53 @@ export * from 'aws-lambda'
 export { Operation as PatchOperation } from 'fast-json-patch'
 export * from '@googlemaps/google-maps-services-js'
 
-export interface Link {
-  accessCount: number
-  expiration?: number
-  lastAccessed?: number
-  url: string
+import { LatLng } from '@googlemaps/google-maps-services-js'
+
+export type RestaurantType = 'restaurant' | 'meal_delivery' | 'meal_takeaway'
+
+export interface Restaurant {
+  name: string
+  openHours: string[]
+  pic?: string
+  priceLevel: number
+  rating: number
+  vicinity: string
 }
 
-export interface LinkBatch {
-  data: Link
+export interface DecisionObject {
+  [key: string]: boolean
+}
+
+export interface Session {
+  address: string
+  choices: Restaurant[]
+  decisions: {
+    [key: string]: DecisionObject
+  }
+  expiration: number
+  lastAccessed: number
+  location: LatLng
+  nextPageToken: string
+  openNow: boolean
+  type: RestaurantType
+  radius: number
+}
+
+export interface SessionBatch {
+  data: Session
   id: string
+}
+
+export interface NewSession {
+  address: string
+  expiration?: number
+  radius: number
+  type: RestaurantType
+}
+
+export interface PlaceResponse {
+  data: Restaurant[]
+  nextPageToken: string
 }
 
 export interface StringObject {

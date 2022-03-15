@@ -1,32 +1,32 @@
 import jwt from 'jsonwebtoken'
 
 import { sessionExpireHours } from '../config'
-import { APIGatewayProxyEventV2, Link, PatchOperation, StringObject } from '../types'
+import { APIGatewayProxyEventV2, NewSession, PatchOperation, StringObject } from '../types'
 
-// 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 86,400,000
-const EXPIRATION_DURATION = sessionExpireHours * 86_400_000
+// 60 minutes * 60 seconds * 1000 milliseconds = 360_000
+const EXPIRATION_DURATION = sessionExpireHours * 3_600_000
 
 /* Choosee */
 
-interface UnformattedLink {
-  accessCount?: number
-  expiration?: number
-  lastAccessed?: number
-  url: string
-}
-
-export const formatLink = (link: UnformattedLink): Link => {
-  if (!link.url) {
-    throw new Error('url missing from link')
+export const formatSession = (session: NewSession): NewSession => {
+  if (!session.address) {
+    throw new Error('address missing from request')
   }
-  if (new URL(link.url).protocol.match(/^https?:$/i) === null) {
-    throw new Error('url must be http or https')
+  const lastExpiration = new Date().getTime() + EXPIRATION_DURATION
+  if (session.expiration !== undefined && session.expiration > lastExpiration) {
+    throw new Error('expiration is outside acceptable range')
+  }
+  if (session.radius === undefined || session.radius < 1500 || session.radius > 50_000) {
+    throw new Error('radius must be greater than or equal to 1500 and less than or equal to 50,000')
+  }
+  if (['restaurant', 'meal_delivery', 'meal_takeaway'].indexOf(session.type) < 0) {
+    throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway"')
   }
   return {
-    accessCount: link.accessCount ?? 0,
-    expiration: link.expiration ?? new Date().getTime() + EXPIRATION_DURATION,
-    lastAccessed: link.lastAccessed ?? 0,
-    url: link.url,
+    address: session.address,
+    expiration: session.expiration ?? lastExpiration,
+    radius: session.radius,
+    type: session.type,
   }
 }
 
@@ -37,8 +37,8 @@ const parseEventBody = (event: APIGatewayProxyEventV2): unknown =>
     event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
   )
 
-export const extractLinkFromEvent = (event: APIGatewayProxyEventV2): Link =>
-  formatLink(parseEventBody(event) as UnformattedLink)
+export const extractNewSessionFromEvent = (event: APIGatewayProxyEventV2): NewSession =>
+  formatSession(parseEventBody(event) as NewSession)
 
 export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchOperation[] =>
   parseEventBody(event) as PatchOperation[]

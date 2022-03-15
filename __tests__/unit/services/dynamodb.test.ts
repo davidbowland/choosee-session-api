@@ -1,4 +1,4 @@
-import { link, sessionId } from '../__mocks__'
+import { session, sessionId } from '../__mocks__'
 import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
 
 const mockDeleteItem = jest.fn()
@@ -31,7 +31,7 @@ describe('dynamodb', () => {
 
   describe('getDataById', () => {
     beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(link) } } })
+      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(session) } } })
     })
 
     test('expect id passed to get', async () => {
@@ -48,20 +48,20 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await getDataById(sessionId)
-      expect(result).toEqual(link)
+      expect(result).toEqual(session)
     })
   })
 
   describe('scanData', () => {
     beforeAll(() => {
       mockScanTable.mockResolvedValue({
-        Items: [{ SessionId: { S: `${sessionId}` }, Data: { S: JSON.stringify(link) } }],
+        Items: [{ SessionId: { S: `${sessionId}` }, Data: { S: JSON.stringify(session) } }],
       })
     })
 
     test('expect data parsed and returned', async () => {
       const result = await scanData()
-      expect(result).toEqual([{ data: link, id: sessionId }])
+      expect(result).toEqual([{ data: session, id: sessionId }])
     })
 
     test('expect empty object with no data returned', async () => {
@@ -92,17 +92,17 @@ describe('dynamodb', () => {
 
   describe('setDataById', () => {
     test('expect index and data passed to put', async () => {
-      await setDataById(sessionId, link)
+      await setDataById(sessionId, session)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
           SessionId: {
             S: `${sessionId}`,
           },
           Expiration: {
-            N: `${link.expiration}`,
+            N: `${session.expiration}`,
           },
           Data: {
-            S: JSON.stringify(link),
+            S: JSON.stringify(session),
           },
         },
         TableName: 'choosee-table',

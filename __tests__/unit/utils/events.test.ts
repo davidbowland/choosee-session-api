@@ -1,62 +1,75 @@
-import { link, jsonPatchOperations } from '../__mocks__'
+import { jsonPatchOperations, newSession } from '../__mocks__'
 import patchEventJson from '@events/patch-item.json'
 import postEventJson from '@events/post-item.json'
 import postSendTextEventJson from '@events/post-send-text.json'
-import { APIGatewayProxyEventV2 } from '@types'
-import { extractLinkFromEvent, extractJsonPatchFromEvent, extractJwtFromEvent, formatLink } from '@utils/events'
+import { APIGatewayProxyEventV2, NewSession } from '@types'
+import {
+  extractNewSessionFromEvent,
+  extractJsonPatchFromEvent,
+  extractJwtFromEvent,
+  formatSession,
+} from '@utils/events'
 
 describe('events', () => {
-  describe('formatLink', () => {
-    test('expect error on missing link', () => {
-      const invalidLink = { ...link, url: 'this-is-invalid' }
-      expect(() => formatLink(invalidLink)).toThrow()
+  describe('formatSession', () => {
+    test('expect error on missing address', () => {
+      const invalidSession = { ...newSession, address: undefined }
+      expect(() => formatSession(invalidSession)).toThrow()
     })
 
-    test('expect error on non-http link', () => {
-      const nonHttpLink = { ...link, url: 'ftp://dbowland.com/' }
-      expect(() => formatLink(nonHttpLink)).toThrow()
+    test('expect error when expiration too late session', () => {
+      const tooLateExpirationSession = { ...newSession, expiration: new Date().getTime() + 100_000_000_000 }
+      expect(() => formatSession(tooLateExpirationSession)).toThrow()
     })
 
-    test('expect formatted link returned', () => {
-      const validLink = { url: 'https://dbowland.com/' }
-      const result = formatLink(validLink)
-      expect(result).toEqual(expect.objectContaining(validLink))
-      expect(result.accessCount).toEqual(0)
-      expect(result.expiration).toBeDefined()
+    test.each([undefined, 1499, 50_001])('expect error on invalid radius (%s)', (radius) => {
+      const invalidSession = { ...newSession, radius }
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
+    test.each([undefined, 'fnord'])('expect error on invalid type (%s)', (type) => {
+      const invalidSession = { ...newSession, type } as NewSession
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
+    test('expect formatted session returned', () => {
+      const result = formatSession(newSession)
+      expect(result).toEqual(expect.objectContaining(newSession))
+      expect(result.expiration).toBeGreaterThan(new Date().getTime())
     })
   })
 
-  describe('extractLinkFromEvent', () => {
+  describe('extractNewSessionFromEvent', () => {
     const event = postEventJson as unknown as APIGatewayProxyEventV2
 
-    test('expect link from event', async () => {
-      const result = await extractLinkFromEvent(event)
-      expect(result).toEqual(expect.objectContaining({ url: link.url }))
+    test('expect session from event', async () => {
+      const result = await extractNewSessionFromEvent(event)
+      expect(result).toEqual(expect.objectContaining(newSession))
     })
 
-    test('expect link from event in base64', async () => {
+    test('expect session from event in base64', async () => {
       const tempEvent = {
         ...event,
         body: Buffer.from(event.body).toString('base64'),
         isBase64Encoded: true,
       } as unknown as APIGatewayProxyEventV2
-      const result = await extractLinkFromEvent(tempEvent)
-      expect(result).toEqual(expect.objectContaining({ url: link.url }))
+      const result = await extractNewSessionFromEvent(tempEvent)
+      expect(result).toEqual(expect.objectContaining(newSession))
     })
 
     test('expect reject on invalid event', async () => {
       const tempEvent = { ...event, body: JSON.stringify({}) } as unknown as APIGatewayProxyEventV2
-      expect(() => extractLinkFromEvent(tempEvent)).toThrow()
+      expect(() => extractNewSessionFromEvent(tempEvent)).toThrow()
     })
 
-    test('expect link to be formatted', async () => {
+    test('expect session to be formatted', async () => {
       const tempEmail = {
-        ...link,
+        ...newSession,
         foo: 'bar',
       }
       const tempEvent = { ...event, body: JSON.stringify(tempEmail) } as unknown as APIGatewayProxyEventV2
-      const result = await extractLinkFromEvent(tempEvent)
-      expect(result).toEqual(expect.objectContaining({ url: link.url }))
+      const result = await extractNewSessionFromEvent(tempEvent)
+      expect(result).toEqual(expect.objectContaining(newSession))
     })
   })
 

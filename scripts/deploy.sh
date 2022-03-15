@@ -18,12 +18,12 @@ export GOOGLE_API_KEY=$(aws ssm get-parameter --name google-places-api | jq -r .
 SMS_API_KEY=$(aws apigateway get-api-key --api-key l3q9ffyih6 --include-value --region us-east-1 | jq -r .value)
 TESTING_ARTIFACTS_BUCKET=choosee-lambda-test
 TESTING_CLOUDFORMATION_EXECUTION_ROLE="arn:aws:iam::$AWS_ACCOUNT_ID:role/choosee-cloudformation-test"
-TESTING_STACK_NAME=choosee-api-test
+TESTING_STACK_NAME=choosee-session-api-test
 sam deploy --stack-name ${TESTING_STACK_NAME} \
            --capabilities CAPABILITY_IAM \
            --region us-east-2 \
            --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-           --s3-prefix choosee-api-test \
+           --s3-prefix choosee-session-api-test \
            --no-fail-on-empty-changeset \
            --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE} \
            --parameter-overrides "Environment=test GoogleApiKey=$GOOGLE_API_KEY SmsApiKey=$SMS_API_KEY"

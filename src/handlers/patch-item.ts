@@ -11,11 +11,16 @@ const patchById = async (
   sessionId: string,
   patchOperations: PatchOperation[]
 ): Promise<APIGatewayProxyResultV2<any>> => {
-  const link = await getDataById(sessionId)
-  const updatedLink = applyPatch(link, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
+  const session = await getDataById(sessionId)
+  const updatedSession = applyPatch(
+    session,
+    patchOperations,
+    throwOnInvalidJsonPatch,
+    mutateObjectOnJsonPatch
+  ).newDocument
   try {
-    await setDataById(sessionId, updatedLink)
-    return { ...status.OK, body: JSON.stringify(updatedLink) }
+    await setDataById(sessionId, updatedSession)
+    return { ...status.OK, body: JSON.stringify(updatedSession) }
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR

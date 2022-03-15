@@ -7,17 +7,18 @@ on:
       - 'feature**'
 
 env:
+  GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
   PIPELINE_USER_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
   TESTING_SMS_API_KEY: ${{ secrets.TESTING_SMS_API_KEY }}
-  TESTING_STACK_NAME: choosee-api-test
+  TESTING_STACK_NAME: choosee-session-api-test
   TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/choosee-pipeline-test
   TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/choosee-cloudformation-test
   TESTING_ARTIFACTS_BUCKET: choosee-lambda-test
   TESTING_REGION: ${{ secrets.AWS_REGION }}
   PROD_SMS_API_KEY: ${{ secrets.PROD_SMS_API_KEY }}
-  PROD_STACK_NAME: choosee-api
+  PROD_STACK_NAME: choosee-session-api
   PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/choosee-pipeline
   PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/choosee-cloudformation
   PROD_ARTIFACTS_BUCKET: choosee-lambda
@@ -84,10 +85,10 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${TESTING_REGION} \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-            --s3-prefix choosee-api-test \
+            --s3-prefix choosee-session-api-test \
             --no-fail-on-empty-changeset \
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE} \
-            --parameter-overrides "Environment=test SmsApiKey=${TESTING_SMS_API_KEY}"
+            --parameter-overrides "Environment=test GoogleApiKey=${GOOGLE_MAPS_API_KEY} SmsApiKey=${TESTING_SMS_API_KEY}"
 
   build-and-package:
     name: Build and package lambda
@@ -128,7 +129,7 @@ jobs:
         run: |
           sam package \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-            --s3-prefix choosee-api-test \
+            --s3-prefix choosee-session-api-test \
             --region ${TESTING_REGION} \
             --output-template-file packaged-testing.yaml
 
@@ -152,7 +153,7 @@ jobs:
         run: |
           sam package \
             --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
-            --s3-prefix choosee-api \
+            --s3-prefix choosee-session-api \
             --region ${PROD_REGION} \
             --output-template-file packaged-prod.yaml
 
@@ -193,10 +194,10 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${TESTING_REGION} \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
-            --s3-prefix choosee-api-test \
+            --s3-prefix choosee-session-api-test \
             --no-fail-on-empty-changeset \
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE} \
-            --parameter-overrides "Environment=test SmsApiKey=${TESTING_SMS_API_KEY}"
+            --parameter-overrides "Environment=test GoogleApiKey=${GOOGLE_MAPS_API_KEY} SmsApiKey=${TESTING_SMS_API_KEY}"
 
   deploy-prod:
     name: Deploy to production
@@ -230,10 +231,10 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${PROD_REGION} \
             --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
-            --s3-prefix choosee-api \
+            --s3-prefix choosee-session-api \
             --no-fail-on-empty-changeset \
             --role-arn ${PROD_CLOUDFORMATION_EXECUTION_ROLE} \
-            --parameter-overrides "SmsApiKey=${PROD_SMS_API_KEY}"
+            --parameter-overrides "GoogleApiKey=${GOOGLE_MAPS_API_KEY} SmsApiKey=${PROD_SMS_API_KEY}"
 
   bump:
     name: Bump the version number and tag the commit

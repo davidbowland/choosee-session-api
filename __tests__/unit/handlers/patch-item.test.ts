@@ -1,9 +1,9 @@
-import { link, sessionId } from '../__mocks__'
+import { session, sessionId } from '../__mocks__'
 import eventJson from '@events/patch-item.json'
 import { patchItemHandler } from '@handlers/patch-item'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayProxyEventV2, Link, PatchOperation } from '@types'
+import { APIGatewayProxyEventV2, PatchOperation, Session } from '@types'
 import * as events from '@utils/events'
 import status from '@utils/status'
 
@@ -13,10 +13,10 @@ jest.mock('@utils/logging')
 
 describe('patch-item', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
-  const expectedResult = { ...link, url: 'https://bowland.link/' } as Link
+  const expectedResult = { ...session, address: '90036' } as Session
 
   beforeAll(() => {
-    mocked(dynamodb).getDataById.mockResolvedValue(link)
+    mocked(dynamodb).getDataById.mockResolvedValue(session)
     mocked(dynamodb).setDataById.mockResolvedValue(undefined)
     mocked(events).extractJsonPatchFromEvent.mockImplementation((event) => JSON.parse(event.body))
   })

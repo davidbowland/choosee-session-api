@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
 import { dynamodbTableName } from '../config'
-import { Link, LinkBatch } from '../types'
+import { Session, SessionBatch } from '../types'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
@@ -21,7 +21,7 @@ export const deleteDataById = (sessionId: string): Promise<DynamoDB.Types.Delete
 
 /* Get single item */
 
-export const getDataById = (sessionId: string): Promise<Link> =>
+export const getDataById = (sessionId: string): Promise<Session> =>
   dynamodb
     .getItem({
       Key: {
@@ -37,13 +37,13 @@ export const getDataById = (sessionId: string): Promise<Link> =>
 
 /* Scan for all items */
 
-const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): LinkBatch[] =>
+const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): SessionBatch[] =>
   response.Items.map((item) => ({ id: item.SessionId.S, data: JSON.parse(item.Data.S) }))
 
-export const scanData = (): Promise<LinkBatch[]> =>
+export const scanData = (): Promise<SessionBatch[]> =>
   dynamodb
     .scan({
-      AttributesToGet: ['Data', 'sessionId', 'Expiration'],
+      AttributesToGet: ['Data', 'SessionId', 'Expiration'],
       TableName: dynamodbTableName,
     })
     .promise()
@@ -71,7 +71,7 @@ export const scanExpiredIds = (): Promise<any> =>
 
 /* Set item */
 
-export const setDataById = (sessionId: string, data: Link): Promise<DynamoDB.Types.PutItemOutput> =>
+export const setDataById = (sessionId: string, data: Session): Promise<DynamoDB.Types.PutItemOutput> =>
   dynamodb
     .putItem({
       Item: {
