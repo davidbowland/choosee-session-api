@@ -11,7 +11,7 @@ export const postSendTextHandler = async (event: APIGatewayProxyEventV2): Promis
     const sessionId = event.pathParameters.sessionId
     const jwtPayload = extractJwtFromEvent(event)
     if (jwtPayload === null) {
-      return { ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid JWT' }) }
+      return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
     }
     await sendSms(jwtPayload.phone_number, `Your Choosee session is: ${corsDomain}/r/${sessionId}`)
 

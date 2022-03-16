@@ -14,7 +14,7 @@ export const restaurant: Restaurant = {
 export const session: Session = {
   address: '90210',
   choices: [restaurant],
-  decisions: {},
+  decisions: { '+15551234567': { "Shakespeare's Pizza - Downtown": true } },
   expiration: 987654321,
   lastAccessed: 123456789,
   location: {

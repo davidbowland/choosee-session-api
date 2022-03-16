@@ -248,14 +248,6 @@ Resources:
             Method: get
             Auth:
               ApiKeyRequired: true
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /sessions/{sessionId}
-            Method: get
-            Auth:
-              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
@@ -275,6 +267,116 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetByIdLogGroup
+
+  GetChoicesByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-choices-by-id.getChoicesByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api get choices by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref SessionTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sessions/{sessionId}
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  GetChoicesByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetChoicesByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetChoicesByIdFunction}
+      RetentionInDays: 30
+
+  GetChoicesByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetChoicesByIdLogGroup
+
+  GetDecisionsByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-decisions-by-id.getDecisionsByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api get decisions by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref SessionTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sessions/{sessionId}/decisions/{userId}
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}/decisions/{userId}
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  GetDecisionsByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetDecisionsByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetDecisionsByIdFunction}
+      RetentionInDays: 30
+
+  GetDecisionsByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetDecisionsByIdLogGroup
 
   PatchItemFunction:
     Type: AWS::Serverless::Function
@@ -323,6 +425,61 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PatchLogGroup
 
+  PatchDecisionsItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/patch-item.patchItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api patch item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref SessionTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sessions/{sessionId}/decisions/{userId}
+            Method: patch
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}/decisions/{userId}
+            Method: patch
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  PatchDecisionsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PatchDecisionsItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PatchDecisionsItemFunction}
+      RetentionInDays: 30
+
+  PatchDecisionsGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PatchDecisionsLogGroup
+
   PostItemFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -362,7 +519,7 @@ Resources:
             Path: /sessions
             Method: post
             Auth:
-              Authorizer: NONE
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
