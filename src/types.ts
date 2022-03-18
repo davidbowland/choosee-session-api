@@ -19,6 +19,12 @@ export interface DecisionObject {
   [key: string]: boolean
 }
 
+export interface StatusObject {
+  current: 'deciding' | 'winner' | 'finished'
+  pageId: number
+  winner?: Restaurant
+}
+
 export interface Session {
   address: string
   choices: Restaurant[]
@@ -30,6 +36,7 @@ export interface Session {
   location: LatLng
   nextPageToken: string
   openNow: boolean
+  status: StatusObject
   type: RestaurantType
   radius: number
 }

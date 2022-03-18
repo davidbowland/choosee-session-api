@@ -59,6 +59,20 @@ describe('post-item', () => {
       )
     })
 
+    test('expect finished status when no data', async () => {
+      mocked(googleMaps).fetchPlaceResults.mockResolvedValue({ ...placeResult, data: [] })
+      const result = await postItemHandler(event)
+      expect(result).toEqual(expect.objectContaining(status.CREATED))
+      expect(JSON.parse(result.body)).toEqual(
+        expect.objectContaining({
+          status: {
+            current: 'finished',
+            pageId: 0,
+          },
+        })
+      )
+    })
+
     test('expect Location header', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining({ headers: { Location: 'http://choosee.bowland.link/s/abc123' } }))

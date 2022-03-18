@@ -5,6 +5,7 @@ import { getDataById, setDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Session } from '../types'
 import { extractJsonPatchFromEvent, extractJwtFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
+import { updateSessionStatus } from '../utils/session'
 import status from '../utils/status'
 
 const applyJsonPatch = async (
@@ -21,7 +22,11 @@ const applyJsonPatch = async (
     mutateObjectOnJsonPatch
   ).newDocument
   try {
-    await setDataById(sessionId, { ...session, decisions: { ...session.decisions, [userId]: updatedDecisions } })
+    const updatedSession = await updateSessionStatus({
+      ...session,
+      decisions: { ...session.decisions, [userId]: updatedDecisions },
+    })
+    await setDataById(sessionId, updatedSession)
     return { ...status.OK, body: JSON.stringify(updatedDecisions) }
   } catch (error) {
     logError(error)

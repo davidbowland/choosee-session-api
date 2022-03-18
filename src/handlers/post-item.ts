@@ -28,6 +28,10 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
         nextPageToken: places.nextPageToken,
         openNow: true,
         radius: newSession.radius,
+        status: {
+          current: places.data.length > 0 ? 'deciding' : 'finished',
+          pageId: 0,
+        },
         type: newSession.type,
       }
       await setDataById(sessionId, session)

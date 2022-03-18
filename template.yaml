@@ -291,7 +291,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /sessions/{sessionId}
+            Path: /sessions/{sessionId}/choices
             Method: get
             Auth:
               ApiKeyRequired: true
@@ -299,7 +299,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-            Path: /sessions/{sessionId}
+            Path: /sessions/{sessionId}/choices
             Method: get
             Auth:
               Authorizer: CognitoAuthorizer
@@ -377,6 +377,61 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetDecisionsByIdLogGroup
+
+  GetStatusByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-status-by-id.getStatusByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api get status by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref SessionTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sessions/{sessionId}/status
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}/status
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  GetStatusByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetStatusByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetStatusByIdFunction}
+      RetentionInDays: 30
+
+  GetStatusByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetStatusByIdLogGroup
 
   PatchItemFunction:
     Type: AWS::Serverless::Function
