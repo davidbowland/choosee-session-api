@@ -1,7 +1,5 @@
 import { NewSession, PatchOperation, Restaurant, Session } from '@types'
 
-export const sessionId = 'abc123'
-
 export const restaurant: Restaurant = {
   name: 'Columbia',
   openHours: undefined,
@@ -9,6 +7,12 @@ export const restaurant: Restaurant = {
   priceLevel: 1,
   rating: 2,
   vicinity: 'Columbia',
+}
+
+export const newSession: NewSession = {
+  address: '90210',
+  radius: 45_000,
+  type: 'restaurant',
 }
 
 export const session: Session = {
@@ -32,11 +36,7 @@ export const session: Session = {
   radius: 45_000,
 }
 
-export const newSession: NewSession = {
-  address: '90210',
-  type: 'restaurant',
-  radius: 45_000,
-}
+export const sessionId = 'abc123'
 
 export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/address', value: '90036' }]
 

@@ -11,7 +11,7 @@ describe('queue', () => {
     beforeAll(() => {
       server.use(
         rest.post(`${smsApiUrl}/messages`, async (req, res, ctx) => {
-          if (smsApiKey != req.headers.get('x-api-key')) {
+          if (smsApiKey !== req.headers.get('x-api-key')) {
             return res(ctx.status(403))
           }
 
