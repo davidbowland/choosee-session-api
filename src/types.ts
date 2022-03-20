@@ -8,7 +8,7 @@ export type RestaurantType = 'restaurant' | 'meal_delivery' | 'meal_takeaway'
 
 export interface Restaurant {
   name: string
-  openHours: string[]
+  openHours?: string[]
   pic?: string
   priceLevel: number
   rating: number
