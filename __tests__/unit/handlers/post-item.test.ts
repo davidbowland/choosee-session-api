@@ -1,4 +1,4 @@
-import { geocodeResult, newSession, placeResult, sessionId } from '../__mocks__'
+import { decodedJwt, geocodeResult, newSession, placeResult, sessionId } from '../__mocks__'
 import eventJson from '@events/post-item.json'
 import { postItemHandler } from '@handlers/post-item'
 import { mocked } from 'jest-mock'
@@ -21,6 +21,7 @@ describe('post-item', () => {
   beforeAll(() => {
     mocked(dynamodb).getDataById.mockRejectedValue(undefined)
     mocked(dynamodb).setDataById.mockResolvedValue(undefined)
+    mocked(events).extractJwtFromEvent.mockReturnValue(decodedJwt)
     mocked(events).extractNewSessionFromEvent.mockReturnValue(newSession)
     mocked(googleMaps).fetchGeocodeResults.mockResolvedValue(geocodeResult as unknown as GeocodeResponse)
     mocked(googleMaps).fetchPlaceResults.mockResolvedValue(placeResult)
@@ -28,12 +29,28 @@ describe('post-item', () => {
   })
 
   describe('postItemHandler', () => {
-    test('expect BAD_REQUEST when link is invalid', async () => {
+    test('expect BAD_REQUEST when new session is invalid', async () => {
       mocked(events).extractNewSessionFromEvent.mockImplementationOnce(() => {
         throw new Error('Bad request')
       })
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
+    })
+
+    test('expect BAD_REQUEST when no results from geocode', async () => {
+      mocked(googleMaps).fetchGeocodeResults.mockResolvedValueOnce({
+        data: {
+          html_attributions: [],
+          next_page_token:
+            'Aap_uED5ulA1bsoLWnkyaDlG1aoxuxgcx8pxnXBzkdbURX3PZwuzXgFtdbkLlJxjvqqCRa1iug_VSAiISjiApmg9yLOXQgWjMDbXuAGnVZaFARBlnfsRe5tjjVx_PKYEZv7iHNYwcvXR9eWvp8k1XMDBkj7Ja-YpLe9r8eAy1nZC-O9-1_M-lRNMNBr3YxCvWY57VXcP5F6-EPpj5vMAoHQ2e65TBGofxvsAkUX8HSvbHTKDCcYoQJUmwJQfeamM9H5stiJ137Ip98aMrEASSqCYCf9osGhRx7lbjZl4jUYKS-Y-8BejokmFWLtldff0SKuKQQrlef4E0xrdXr1jUh-uRVZTJoCq6Ki1AhiSM9qEvl0_EHYzAMbeQ9bCn0O_AlO6xstNfozKpz8SXXEiqpWaGXyaUqz-NU2facRhhZqPROSb',
+          results: [],
+          status: 'OK',
+        },
+      } as unknown as GeocodeResponse)
+      const result = await postItemHandler(event)
+      expect(result).toEqual(
+        expect.objectContaining({ ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid address' }) })
+      )
     })
 
     test('expect sessionId passed to setDataById', async () => {
@@ -50,6 +67,18 @@ describe('post-item', () => {
     test('expect CREATED and body', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
+      expect(JSON.parse(result.body)).toEqual({
+        sessionId: 'abc123',
+        location: 'http://choosee.bowland.link/s/abc123',
+      })
+    })
+
+    test('expect CREATED and full body when no JWT', async () => {
+      mocked(events).extractJwtFromEvent.mockImplementationOnce(() => {
+        throw new Error('JWT error')
+      })
+      const result = await postItemHandler(event)
+      expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(JSON.parse(result.body)).toEqual(
         expect.objectContaining({
           ...newSession,
@@ -60,6 +89,9 @@ describe('post-item', () => {
     })
 
     test('expect finished status when no data', async () => {
+      mocked(events).extractJwtFromEvent.mockImplementationOnce(() => {
+        throw new Error('JWT error')
+      })
       mocked(googleMaps).fetchPlaceResults.mockResolvedValue({ ...placeResult, data: [] })
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))

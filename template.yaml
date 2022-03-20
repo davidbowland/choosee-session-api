@@ -708,7 +708,7 @@ Resources:
               KeyType: HASH
           Projection:
             NonKeyAttributes:
-              - sessionId
+              - SessionId
             ProjectionType: INCLUDE
       KeySchema:
         - AttributeName: SessionId
