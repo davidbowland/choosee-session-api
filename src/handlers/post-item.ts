@@ -16,6 +16,7 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
       const latLng = geocoded.data.results[0].geometry.location
 
       const places = await fetchPlaceResults(latLng, newSession.type, newSession.radius)
+      log('Google API results', { geocoded, places })
 
       const sessionId = await getNextId()
       const session: Session = {
@@ -34,6 +35,7 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
         },
         type: newSession.type,
       }
+      log('Creating session', { session, sessionId })
       await setDataById(sessionId, session)
       const location = `${corsDomain}/s/${sessionId}`
       return {
