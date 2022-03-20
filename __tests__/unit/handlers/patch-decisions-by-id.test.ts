@@ -68,9 +68,16 @@ describe('patch-decisions-by-id', () => {
 
     test('expect OK and body when ID exists', async () => {
       const result = await patchDecisionByIdHandler(event)
-      expect(result).toEqual(
-        expect.objectContaining({ ...status.OK, body: JSON.stringify({ "Shakespeare's Pizza - Downtown": false }) })
-      )
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ "Shakespeare's Pizza - Downtown": false }) })
+    })
+
+    test('expect OK and body when ID does not exist', async () => {
+      mocked(dynamodb).getDataById.mockResolvedValueOnce({ ...session, decisions: {} })
+      const result = await patchDecisionByIdHandler({
+        ...event,
+        body: JSON.stringify([{ op: 'add', path: "/Shakespeare's Pizza - Downtown", value: false }]),
+      })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ "Shakespeare's Pizza - Downtown": false }) })
     })
 
     test('expect OK and results when no JWT provided', async () => {

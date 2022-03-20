@@ -14,7 +14,7 @@ const applyJsonPatch = async (
   userId: string,
   patchOperations: PatchOperation[]
 ): Promise<APIGatewayProxyResultV2<any>> => {
-  const decisions = session.decisions[userId]
+  const decisions = session.decisions[userId] || {}
   const updatedDecisions = applyPatch(
     decisions,
     patchOperations,
