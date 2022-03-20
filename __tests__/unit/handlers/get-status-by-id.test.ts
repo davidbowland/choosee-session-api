@@ -25,7 +25,7 @@ describe('get-status-by-id', () => {
 
     test('expect OK when id exists', async () => {
       const result = await getStatusByIdHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify(session.status) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...session.status, address: session.address }) })
     })
   })
 })
