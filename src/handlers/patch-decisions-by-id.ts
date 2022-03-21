@@ -26,7 +26,7 @@ const applyJsonPatch = async (
       ...session,
       decisions: { ...session.decisions, [userId]: updatedDecisions },
     })
-    log('Updated session', { prevSession: session, sessionId, updatedSession })
+    log('Updated session', { prevSession: session, sessionId, updatedDecisions, updatedSession })
     await setDataById(sessionId, updatedSession)
     return { ...status.OK, body: JSON.stringify(updatedDecisions) }
   } catch (error) {

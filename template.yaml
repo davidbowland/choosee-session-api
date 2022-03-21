@@ -302,7 +302,7 @@ Resources:
             Path: /sessions/{sessionId}/choices
             Method: get
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
@@ -357,7 +357,7 @@ Resources:
             Path: /sessions/{sessionId}/decisions/{userId}
             Method: get
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
@@ -412,7 +412,7 @@ Resources:
             Path: /sessions/{sessionId}/status
             Method: get
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
@@ -483,7 +483,7 @@ Resources:
   PatchDecisionsItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/patch-item.patchItemHandler
+      Handler: handlers/patch-decisions-by-id.patchDecisionByIdHandler
       CodeUri: './dist'
       Runtime: nodejs14.x
       Architectures:
@@ -498,6 +498,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref SessionTable
+          GOOGLE_API_KEY: !Ref GoogleApiKey
       Events:
         ApiKey:
           Type: Api
@@ -514,7 +515,7 @@ Resources:
             Path: /sessions/{sessionId}/decisions/{userId}
             Method: patch
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
