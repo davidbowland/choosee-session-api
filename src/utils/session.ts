@@ -10,6 +10,10 @@ const extractPositiveDecisions = (decisions: DecisionObject): string[] =>
   Object.keys(decisions).filter((name) => decisions[name])
 
 export const updateSessionStatus = async (session: Session): Promise<Session> => {
+  if (Object.keys(session.decisions).length < 2) {
+    return session
+  }
+
   const choiceNames = session.choices.map((value) => value.name)
   const allDecisions = Object.values(session.decisions)
   const allDecisionsComplete = allDecisions.every((decisions) => areDecisionsComplete(choiceNames, decisions))

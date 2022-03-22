@@ -16,6 +16,15 @@ describe('sessions', () => {
       expect(result).toEqual(session)
     })
 
+    test('expect status unchanged when only one voter', async () => {
+      const decisionOneVoterSession = {
+        ...session,
+        decisions: { '+15551234568': { Columbia: true } },
+      }
+      const result = await updateSessionStatus(decisionOneVoterSession)
+      expect(result).toEqual(decisionOneVoterSession)
+    })
+
     test('expect status unchanged when one decision matches', async () => {
       const decisionNoMatchSession = {
         ...session,
