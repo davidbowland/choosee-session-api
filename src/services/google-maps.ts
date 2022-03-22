@@ -12,6 +12,19 @@ export const fetchGeocodeResults = (address: string): Promise<GeocodeResponse> =
     },
   })
 
+export const fetchPicture = (photoreference: string): Promise<string> =>
+  client
+    .placePhoto({
+      params: {
+        key: googleApiKey,
+        maxheight: 200,
+        maxwidth: 350,
+        photoreference,
+      },
+      responseType: 'stream',
+    })
+    .then((response) => response.data.responseUrl)
+
 export const fetchPlaceResults = (
   location: LatLng,
   type: string,
@@ -30,14 +43,16 @@ export const fetchPlaceResults = (
       },
       timeout: googleTimeoutMs,
     })
-    .then((response) => ({
-      data: response.data.results.map((restaurant) => ({
-        name: restaurant.name,
-        openHours: restaurant.opening_hours?.weekday_text,
-        pic: restaurant.photos?.[0].photo_reference,
-        priceLevel: restaurant.price_level,
-        rating: restaurant.rating,
-        vicinity: restaurant.vicinity,
-      })),
+    .then(async (response) => ({
+      data: await Promise.all(
+        response.data.results.map(async (restaurant) => ({
+          name: restaurant.name,
+          openHours: restaurant.opening_hours?.weekday_text,
+          pic: restaurant.photos?.[0] && (await fetchPicture(restaurant.photos[0].photo_reference)),
+          priceLevel: restaurant.price_level,
+          rating: restaurant.rating,
+          vicinity: restaurant.vicinity,
+        }))
+      ),
       nextPageToken: response.data.next_page_token,
     }))

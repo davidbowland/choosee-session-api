@@ -1,12 +1,14 @@
 import { geocodeResult, placeResponse, placeResult } from '../__mocks__'
 import { googleApiKey, googleTimeoutMs } from '@config'
-import { fetchGeocodeResults, fetchPlaceResults } from '@services/google-maps'
+import { fetchGeocodeResults, fetchPicture, fetchPlaceResults } from '@services/google-maps'
 
 const mockGeocode = jest.fn()
+const mockPlacePhoto = jest.fn()
 const mockPlacesNearby = jest.fn()
 jest.mock('@googlemaps/google-maps-services-js', () => ({
   Client: jest.fn().mockReturnValue({
     geocode: (...args) => mockGeocode(...args),
+    placePhoto: (...args) => mockPlacePhoto(...args),
     placesNearby: (...args) => mockPlacesNearby(...args),
   }),
 }))
@@ -32,6 +34,33 @@ describe('queue', () => {
     test('expect results returned', async () => {
       const result = await fetchGeocodeResults(address)
       expect(result).toEqual(geocodeResult)
+    })
+  })
+
+  describe('fetchPicture', () => {
+    const picture = 'a-picture-stream'
+    const photoreference = '76tghbde56yuju'
+
+    beforeAll(() => {
+      mockPlacePhoto.mockResolvedValue({ data: { responseUrl: picture } })
+    })
+
+    test('expect photoreference passed to placePhoto', async () => {
+      await fetchPicture(photoreference)
+      expect(mockPlacePhoto).toHaveBeenCalledWith({
+        params: {
+          key: googleApiKey,
+          maxheight: 200,
+          maxwidth: 350,
+          photoreference: '76tghbde56yuju',
+        },
+        responseType: 'stream',
+      })
+    })
+
+    test('expect results returned', async () => {
+      const result = await fetchPicture(photoreference)
+      expect(result).toEqual(picture)
     })
   })
 
