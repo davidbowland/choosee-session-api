@@ -34,14 +34,24 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
     }
   }
 
-  const places = await fetchPlaceResults(session.location, session.type, session.radius, session.nextPageToken)
-  return {
-    ...session,
-    choices: places.data,
-    nextPageToken: places.nextPageToken,
-    status: {
-      current: places.data.length > 0 ? 'deciding' : 'finished',
-      pageId: session.status.pageId + 1,
-    },
+  if (session.nextPageToken) {
+    const places = await fetchPlaceResults(session.location, session.type, session.radius, session.nextPageToken)
+    return {
+      ...session,
+      choices: places.data,
+      nextPageToken: places.nextPageToken,
+      status: {
+        current: places.data.length > 0 ? 'deciding' : 'finished',
+        pageId: session.status.pageId + 1,
+      },
+    }
+  } else {
+    return {
+      ...session,
+      status: {
+        ...session.status,
+        current: 'finished',
+      },
+    }
   }
 }

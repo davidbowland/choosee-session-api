@@ -61,5 +61,15 @@ describe('sessions', () => {
       const result = await updateSessionStatus(decisionNoMatchSession)
       expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
     })
+
+    test('expect status to be finished when no more pages', async () => {
+      const noNextPageSession = {
+        ...session,
+        decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: false } },
+        nextPageToken: undefined,
+      }
+      const result = await updateSessionStatus(noNextPageSession)
+      expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 0 } }))
+    })
   })
 })
