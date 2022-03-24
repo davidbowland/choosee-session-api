@@ -13,7 +13,7 @@ export const postSendTextHandler = async (event: APIGatewayProxyEventV2): Promis
     if (jwtPayload === null) {
       return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
     }
-    await sendSms(jwtPayload.phone_number, `Your Choosee session is: ${corsDomain}/r/${sessionId}`)
+    await sendSms(jwtPayload.phone_number, `Your Choosee session is: ${corsDomain}/s/${sessionId}`)
 
     return status.NO_CONTENT
   } catch (error) {
