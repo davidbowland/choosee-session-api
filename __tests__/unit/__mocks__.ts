@@ -1,6 +1,6 @@
-import { NewSession, PatchOperation, Restaurant, Session } from '@types'
+import { NewSession, PatchOperation, Place, Session } from '@types'
 
-export const restaurant: Restaurant = {
+export const place: Place = {
   name: 'Columbia',
   openHours: undefined,
   pic: 'Aap_uEDinckK9Ca3tIgxigpNxy1THsppgE5H9ie_tFEc5pDYIDTSC52cWtEWifvmRD6_jhRuo4IsiRY5AZK2Y6_NRv4i_vsANZZpvsXj4gfkT4iYwpAp_i7tVHYRAgJ03ki3JzRv5_ouIPOpa9_uYavGE5fdhADeXeGRhkZnGWPXu5RxJpD1',
@@ -18,7 +18,7 @@ export const newSession: NewSession = {
 
 export const session: Session = {
   address: '90210',
-  choices: [restaurant],
+  choices: [place],
   decisions: { '+15551234567': { "Shakespeare's Pizza - Downtown": true } },
   expiration: 987654321,
   lastAccessed: 123456789,

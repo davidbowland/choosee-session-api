@@ -59,14 +59,14 @@ export const fetchPlaceResults = (location: LatLng, type: string, nextPageToken?
     })
     .then(async (response) => ({
       data: await Promise.all(
-        response.data.results.map(async (restaurant) => ({
-          name: restaurant.name,
-          openHours: restaurant.opening_hours?.weekday_text,
-          pic: restaurant.photos?.[0] && (await fetchPicture(restaurant.photos[0].photo_reference)),
-          placeId: restaurant.place_id,
-          priceLevel: restaurant.price_level,
-          rating: restaurant.rating,
-          vicinity: restaurant.vicinity,
+        response.data.results.map(async (place) => ({
+          name: place.name,
+          openHours: place.opening_hours?.weekday_text,
+          pic: place.photos?.[0] && (await fetchPicture(place.photos[0].photo_reference)),
+          placeId: place.place_id,
+          priceLevel: place.price_level,
+          rating: place.rating,
+          vicinity: place.vicinity,
         }))
       ),
       nextPageToken: response.data.next_page_token,

@@ -1,4 +1,4 @@
-import { placeDetailsResponse, placeResult, restaurant, session } from '../__mocks__'
+import { placeDetailsResponse, placeResult, place, session } from '../__mocks__'
 import { mocked } from 'jest-mock'
 
 import * as googleMaps from '@services/google-maps'
@@ -17,8 +17,8 @@ describe('sessions', () => {
   })
 
   describe('updateSessionStatus', () => {
-    const winningRestaurant = {
-      ...restaurant,
+    const winningPlace = {
+      ...place,
       formattedAddress: '225 S 9th St, Columbia, MO 65201, USA',
       formattedPhoneNumber: '(573) 449-2454',
       internationalPhoneNumber: '+1 573-449-2454',
@@ -67,9 +67,7 @@ describe('sessions', () => {
           decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
         }
         const result = await updateSessionStatus(decisionMatchSession)
-        expect(result).toEqual(
-          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: restaurant } })
-        )
+        expect(result).toEqual(expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: place } }))
       })
 
       test('expect status changed to winner enhanced with details', async () => {
@@ -79,7 +77,7 @@ describe('sessions', () => {
         }
         const result = await updateSessionStatus(decisionMatchSession)
         expect(result).toEqual(
-          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningRestaurant } })
+          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
         )
       })
 
@@ -94,7 +92,7 @@ describe('sessions', () => {
         const result = await updateSessionStatus(decisionMatchSession)
         expect(result).toEqual(
           expect.objectContaining({
-            status: { current: 'winner', pageId: 0, winner: { ...winningRestaurant, openHours: undefined } },
+            status: { current: 'winner', pageId: 0, winner: { ...winningPlace, openHours: undefined } },
           })
         )
       })
@@ -107,7 +105,7 @@ describe('sessions', () => {
         }
         const result = await updateSessionStatus(decisionMatchSession)
         expect(result).toEqual(
-          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningRestaurant } })
+          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
         )
       })
     })
