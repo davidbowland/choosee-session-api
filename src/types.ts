@@ -46,7 +46,6 @@ export interface Session {
   openNow: boolean
   status: StatusObject
   type: RestaurantType
-  radius: number
   voterCount: number
 }
 
@@ -58,7 +57,6 @@ export interface SessionBatch {
 export interface NewSession {
   address: string
   expiration?: number
-  radius: number
   type: RestaurantType
   voterCount: number
 }

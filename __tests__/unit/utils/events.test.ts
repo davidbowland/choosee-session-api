@@ -22,11 +22,6 @@ describe('events', () => {
       expect(() => formatSession(tooLateExpirationSession)).toThrow()
     })
 
-    test.each([undefined, 1499, 50_001])('expect error on invalid radius (%s)', (radius) => {
-      const invalidSession = { ...newSession, radius }
-      expect(() => formatSession(invalidSession)).toThrow()
-    })
-
     test.each([undefined, 'fnord'])('expect error on invalid type (%s)', (type) => {
       const invalidSession = { ...newSession, type } as NewSession
       expect(() => formatSession(invalidSession)).toThrow()

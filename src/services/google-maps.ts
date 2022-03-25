@@ -1,5 +1,5 @@
 import { googleApiKey, googleTimeoutMs } from '../config'
-import { Client } from '@googlemaps/google-maps-services-js'
+import { Client, PlacesNearbyRanking } from '@googlemaps/google-maps-services-js'
 import { GeocodeResponse, LatLng, PlaceDetailsResponse, PlaceResponse } from '../types'
 
 const client = new Client()
@@ -44,12 +44,7 @@ export const fetchPlaceDetails = (placeId: string): Promise<PlaceDetailsResponse
     timeout: googleTimeoutMs,
   })
 
-export const fetchPlaceResults = (
-  location: LatLng,
-  type: string,
-  radius: number,
-  nextPageToken?: string
-): Promise<PlaceResponse> =>
+export const fetchPlaceResults = (location: LatLng, type: string, nextPageToken?: string): Promise<PlaceResponse> =>
   client
     .placesNearby({
       params: {
@@ -57,7 +52,7 @@ export const fetchPlaceResults = (
         location,
         opennow: true,
         pagetoken: nextPageToken,
-        radius,
+        rankby: PlacesNearbyRanking.distance,
         type,
       },
       timeout: googleTimeoutMs,

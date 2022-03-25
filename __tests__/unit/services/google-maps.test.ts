@@ -13,6 +13,9 @@ jest.mock('@googlemaps/google-maps-services-js', () => ({
     placePhoto: (...args) => mockPlacePhoto(...args),
     placesNearby: (...args) => mockPlacesNearby(...args),
   }),
+  PlacesNearbyRanking: {
+    distance: 'distance',
+  },
 }))
 
 describe('queue', () => {
@@ -101,20 +104,19 @@ describe('queue', () => {
   describe('fetchPlaceResults', () => {
     const location = { lat: 39, lng: -92 }
     const type = 'restaurant'
-    const radius = 50_000
 
     beforeAll(() => {
       mockPlacesNearby.mockResolvedValue(placeResponse)
     })
 
     test('expect parameters passed to placesNearby', async () => {
-      await fetchPlaceResults(location, type, radius)
+      await fetchPlaceResults(location, type)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
           key: googleApiKey,
           location,
           opennow: true,
-          radius,
+          rankby: 'distance',
           type,
         },
         timeout: googleTimeoutMs,
@@ -122,14 +124,14 @@ describe('queue', () => {
     })
 
     test('expect results returned', async () => {
-      const result = await fetchPlaceResults(location, type, radius)
+      const result = await fetchPlaceResults(location, type)
       expect(result).toEqual(placeResult)
     })
 
     test('expect undefined for missing values', async () => {
       const place = { ...placeResponse.data.results[0], opening_hours: undefined, photos: undefined }
       mockPlacesNearby.mockResolvedValueOnce({ ...placeResponse, data: { results: [place] } })
-      const result = await fetchPlaceResults(location, type, radius)
+      const result = await fetchPlaceResults(location, type)
       expect(result).toEqual({ data: [{ ...placeResult.data[0], pic: undefined }] })
     })
   })
