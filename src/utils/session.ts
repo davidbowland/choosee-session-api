@@ -15,7 +15,6 @@ const enhanceWithDetails = async (restaurant: Restaurant): Promise<RestaurantDet
     try {
       const winnerDetails = await fetchPlaceDetails(restaurant.placeId)
       const winnerResult = winnerDetails.data.result
-      console.log({ winnerDetails, winnerResult })
       if (winnerResult) {
         return {
           ...restaurant,
@@ -34,7 +33,7 @@ const enhanceWithDetails = async (restaurant: Restaurant): Promise<RestaurantDet
 }
 
 export const updateSessionStatus = async (session: Session): Promise<Session> => {
-  if (Object.keys(session.decisions).length < 2) {
+  if (Object.keys(session.decisions).length < session.voterCount) {
     return session
   }
 

@@ -98,6 +98,18 @@ describe('sessions', () => {
           })
         )
       })
+
+      test('expect status changed to winner when voter count hit', async () => {
+        const decisionMatchSession = {
+          ...session,
+          decisions: { '+15551234567': { Columbia: true } },
+          voterCount: 1,
+        }
+        const result = await updateSessionStatus(decisionMatchSession)
+        expect(result).toEqual(
+          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningRestaurant } })
+        )
+      })
     })
 
     describe('deciding', () => {

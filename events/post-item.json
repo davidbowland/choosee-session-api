@@ -1,5 +1,5 @@
 {
-  "body": "{\"address\":\"90210\",\"radius\":45000,\"type\":\"restaurant\"}",
+  "body": "{\"address\":\"90210\",\"radius\":45000,\"type\":\"restaurant\",\"voterCount\":2}",
   "requestContext": {
     "http": {
       "method": "POST",
