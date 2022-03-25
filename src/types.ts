@@ -57,6 +57,7 @@ export interface SessionBatch {
 export interface NewSession {
   address: string
   expiration?: number
+  openNow?: boolean
   type: PlaceType
   voterCount: number
 }

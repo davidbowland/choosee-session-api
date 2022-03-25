@@ -44,13 +44,18 @@ export const fetchPlaceDetails = (placeId: string): Promise<PlaceDetailsResponse
     timeout: googleTimeoutMs,
   })
 
-export const fetchPlaceResults = (location: LatLng, type: string, nextPageToken?: string): Promise<PlaceResponse> =>
+export const fetchPlaceResults = (
+  location: LatLng,
+  type: string,
+  openNow: boolean,
+  nextPageToken?: string
+): Promise<PlaceResponse> =>
   client
     .placesNearby({
       params: {
         key: googleApiKey,
         location,
-        opennow: true,
+        opennow: openNow || undefined,
         pagetoken: nextPageToken,
         rankby: PlacesNearbyRanking.distance,
         type,
