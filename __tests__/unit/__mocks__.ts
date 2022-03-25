@@ -12,7 +12,6 @@ export const restaurant: Restaurant = {
 
 export const newSession: NewSession = {
   address: '90210',
-  radius: 45_000,
   type: 'restaurant',
   voterCount: 2,
 }
@@ -35,7 +34,6 @@ export const session: Session = {
     pageId: 0,
   },
   type: 'restaurant',
-  radius: 45_000,
   voterCount: 2,
 }
 

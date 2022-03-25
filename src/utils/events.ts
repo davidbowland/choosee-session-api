@@ -16,9 +16,6 @@ export const formatSession = (session: NewSession): NewSession => {
   if (session.expiration !== undefined && session.expiration > lastExpiration) {
     throw new Error('expiration is outside acceptable range')
   }
-  if (session.radius === undefined || session.radius < 1500 || session.radius > 50_000) {
-    throw new Error('radius must be greater than or equal to 1500 and less than or equal to 50,000')
-  }
   if (['restaurant', 'meal_delivery', 'meal_takeaway'].indexOf(session.type) < 0) {
     throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway"')
   }
@@ -28,7 +25,6 @@ export const formatSession = (session: NewSession): NewSession => {
   return {
     address: session.address,
     expiration: session.expiration ?? lastExpiration,
-    radius: session.radius,
     type: session.type,
     voterCount: session.voterCount,
   }
