@@ -691,6 +691,54 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostSendTextLogGroup
 
+  PostSendTextToFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-send-text-to.postSendTextToHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api post send text to
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+          SMS_API_KEY: !Ref SmsApiKey
+          SMS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, smsApiUrl]
+          USER_POOL_ID: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
+      Events:
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}/send-text/{toUserId}
+            Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  PostSendTextToLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostSendTextToFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostSendTextToFunction}
+      RetentionInDays: 30
+
+  PostSendTextToGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostSendTextToLogGroup
+
   # DynamoDB
 
   SessionTable:
