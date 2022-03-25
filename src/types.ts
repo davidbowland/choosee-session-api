@@ -30,7 +30,7 @@ export interface DecisionObject {
 export interface StatusObject {
   current: 'deciding' | 'winner' | 'finished'
   pageId: number
-  winner?: Restaurant
+  winner?: RestaurantDetails
 }
 
 export interface Session {
@@ -47,6 +47,7 @@ export interface Session {
   status: StatusObject
   type: RestaurantType
   radius: number
+  voterCount: number
 }
 
 export interface SessionBatch {
@@ -59,6 +60,7 @@ export interface NewSession {
   expiration?: number
   radius: number
   type: RestaurantType
+  voterCount: number
 }
 
 export interface PlaceResponse {

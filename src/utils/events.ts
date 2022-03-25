@@ -22,11 +22,15 @@ export const formatSession = (session: NewSession): NewSession => {
   if (['restaurant', 'meal_delivery', 'meal_takeaway'].indexOf(session.type) < 0) {
     throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway"')
   }
+  if (session.voterCount === undefined || session.voterCount < 1 || session.voterCount > 10) {
+    throw new Error('voterCount must be 1 thru 10')
+  }
   return {
     address: session.address,
     expiration: session.expiration ?? lastExpiration,
     radius: session.radius,
     type: session.type,
+    voterCount: session.voterCount,
   }
 }
 

@@ -34,6 +34,7 @@ const createNewSession = async (newSession: NewSession, jwt?: StringObject): Pro
         pageId: 0,
       },
       type: newSession.type,
+      voterCount: newSession.voterCount,
     }
     log('Creating session', { session, sessionId })
     await setDataById(sessionId, session)

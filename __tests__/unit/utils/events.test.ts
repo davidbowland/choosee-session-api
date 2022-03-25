@@ -32,6 +32,11 @@ describe('events', () => {
       expect(() => formatSession(invalidSession)).toThrow()
     })
 
+    test.each([undefined, 0, 11])('expect error on invalid voterCount (%s)', (voterCount) => {
+      const invalidSession = { ...newSession, voterCount } as NewSession
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
     test('expect formatted session returned', () => {
       const result = formatSession(newSession)
       expect(result).toEqual(expect.objectContaining(newSession))
