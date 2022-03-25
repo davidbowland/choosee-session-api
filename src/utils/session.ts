@@ -1,6 +1,6 @@
 import { logError } from './logging'
 import { fetchPlaceDetails, fetchPlaceResults } from '../services/google-maps'
-import { DecisionObject, Restaurant, RestaurantDetails, Session } from '../types'
+import { DecisionObject, Place, PlaceDetails, Session } from '../types'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
   choiceNames.every((name) => name in decisions)
@@ -10,14 +10,14 @@ const intersection = (set1: string[], set2: string[]): string[] => set1.filter((
 const extractPositiveDecisions = (decisions: DecisionObject): string[] =>
   Object.keys(decisions).filter((name) => decisions[name])
 
-const enhanceWithDetails = async (restaurant: Restaurant): Promise<RestaurantDetails> => {
-  if (restaurant.placeId) {
+const enhanceWithDetails = async (place: Place): Promise<PlaceDetails> => {
+  if (place.placeId) {
     try {
-      const winnerDetails = await fetchPlaceDetails(restaurant.placeId)
+      const winnerDetails = await fetchPlaceDetails(place.placeId)
       const winnerResult = winnerDetails.data.result
       if (winnerResult) {
         return {
-          ...restaurant,
+          ...place,
           formattedAddress: winnerResult.formatted_address,
           formattedPhoneNumber: winnerResult.formatted_phone_number,
           internationalPhoneNumber: winnerResult.international_phone_number,
@@ -29,7 +29,7 @@ const enhanceWithDetails = async (restaurant: Restaurant): Promise<RestaurantDet
       logError(error)
     }
   }
-  return restaurant
+  return place
 }
 
 export const updateSessionStatus = async (session: Session): Promise<Session> => {
@@ -47,13 +47,13 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
   const winners = allDecisions.map(extractPositiveDecisions).reduce(intersection)
   if (winners.length > 0) {
     const randomWinner = winners[Math.floor(Math.random() * winners.length)]
-    const winnerRestaurant = session.choices.filter((restaurant) => restaurant.name === randomWinner)[0]
+    const winnerPlace = session.choices.filter((place) => place.name === randomWinner)[0]
     return {
       ...session,
       status: {
         current: 'winner',
         pageId: session.status.pageId,
-        winner: await enhanceWithDetails(winnerRestaurant),
+        winner: await enhanceWithDetails(winnerPlace),
       },
     }
   }

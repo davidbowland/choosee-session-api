@@ -16,8 +16,8 @@ export const formatSession = (session: NewSession): NewSession => {
   if (session.expiration !== undefined && session.expiration > lastExpiration) {
     throw new Error('expiration is outside acceptable range')
   }
-  if (['restaurant', 'meal_delivery', 'meal_takeaway'].indexOf(session.type) < 0) {
-    throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway"')
+  if (['restaurant', 'meal_delivery', 'meal_takeaway', 'bar', 'cafe', 'night_club'].indexOf(session.type) < 0) {
+    throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway", "bar", "cafe", "night_club"')
   }
   if (session.voterCount === undefined || session.voterCount < 1 || session.voterCount > 10) {
     throw new Error('voterCount must be 1 thru 10')

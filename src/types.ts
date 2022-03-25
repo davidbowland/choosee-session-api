@@ -4,9 +4,9 @@ export * from '@googlemaps/google-maps-services-js'
 
 import { LatLng } from '@googlemaps/google-maps-services-js'
 
-export type RestaurantType = 'restaurant' | 'meal_delivery' | 'meal_takeaway'
+export type PlaceType = 'restaurant' | 'meal_delivery' | 'meal_takeaway' | 'bar' | 'cafe' | 'night_club'
 
-export interface Restaurant {
+export interface Place {
   name: string
   openHours?: string[]
   pic?: string
@@ -16,7 +16,7 @@ export interface Restaurant {
   vicinity: string
 }
 
-export interface RestaurantDetails extends Restaurant {
+export interface PlaceDetails extends Place {
   formattedAddress?: string
   formattedPhoneNumber?: string
   internationalPhoneNumber?: string
@@ -30,12 +30,12 @@ export interface DecisionObject {
 export interface StatusObject {
   current: 'deciding' | 'winner' | 'finished'
   pageId: number
-  winner?: RestaurantDetails
+  winner?: PlaceDetails
 }
 
 export interface Session {
   address: string
-  choices: Restaurant[]
+  choices: Place[]
   decisions: {
     [key: string]: DecisionObject
   }
@@ -45,7 +45,7 @@ export interface Session {
   nextPageToken: string
   openNow: boolean
   status: StatusObject
-  type: RestaurantType
+  type: PlaceType
   voterCount: number
 }
 
@@ -57,12 +57,12 @@ export interface SessionBatch {
 export interface NewSession {
   address: string
   expiration?: number
-  type: RestaurantType
+  type: PlaceType
   voterCount: number
 }
 
 export interface PlaceResponse {
-  data: Restaurant[]
+  data: Place[]
   nextPageToken: string
 }
 

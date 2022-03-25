@@ -20,7 +20,7 @@ export const dynamodbTableName = process.env.DYNAMODB_TABLE_NAME as string
 // Google
 
 export const googleApiKey = process.env.GOOGLE_API_KEY as string
-export const googleTimeoutMs = 1000
+export const googleTimeoutMs = 2500
 
 // JsonPatch
 
