@@ -15,7 +15,7 @@ const createNewSession = async (newSession: NewSession, jwt?: StringObject): Pro
     }
     const latLng = geocoded.data.results[0].geometry.location
 
-    const places = await fetchPlaceResults(latLng, newSession.type)
+    const places = await fetchPlaceResults(latLng, newSession.type, newSession.openNow)
     log('Google API results', { geocoded, places })
 
     const sessionId = await getNextId()
@@ -27,7 +27,7 @@ const createNewSession = async (newSession: NewSession, jwt?: StringObject): Pro
       lastAccessed: 0,
       location: latLng,
       nextPageToken: places.nextPageToken,
-      openNow: true,
+      openNow: newSession.openNow,
       status: {
         current: places.data.length > 0 ? 'deciding' : 'finished',
         pageId: 0,

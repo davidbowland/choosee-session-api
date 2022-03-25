@@ -103,6 +103,7 @@ describe('queue', () => {
 
   describe('fetchPlaceResults', () => {
     const location = { lat: 39, lng: -92 }
+    const openNow = true
     const type = 'restaurant'
 
     beforeAll(() => {
@@ -110,7 +111,7 @@ describe('queue', () => {
     })
 
     test('expect parameters passed to placesNearby', async () => {
-      await fetchPlaceResults(location, type)
+      await fetchPlaceResults(location, type, openNow)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
           key: googleApiKey,
@@ -123,15 +124,29 @@ describe('queue', () => {
       })
     })
 
+    test('expect undefined used instead of false for opennow', async () => {
+      await fetchPlaceResults(location, type, false)
+      expect(mockPlacesNearby).toHaveBeenCalledWith({
+        params: {
+          key: googleApiKey,
+          location,
+          opennow: undefined,
+          rankby: 'distance',
+          type,
+        },
+        timeout: googleTimeoutMs,
+      })
+    })
+
     test('expect results returned', async () => {
-      const result = await fetchPlaceResults(location, type)
+      const result = await fetchPlaceResults(location, type, openNow)
       expect(result).toEqual(placeResult)
     })
 
     test('expect undefined for missing values', async () => {
       const place = { ...placeResponse.data.results[0], opening_hours: undefined, photos: undefined }
       mockPlacesNearby.mockResolvedValueOnce({ ...placeResponse, data: { results: [place] } })
-      const result = await fetchPlaceResults(location, type)
+      const result = await fetchPlaceResults(location, type, openNow)
       expect(result).toEqual({ data: [{ ...placeResult.data[0], pic: undefined }] })
     })
   })

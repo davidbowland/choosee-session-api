@@ -59,7 +59,7 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
   }
 
   if (session.nextPageToken) {
-    const places = await fetchPlaceResults(session.location, session.type, session.nextPageToken)
+    const places = await fetchPlaceResults(session.location, session.type, session.openNow, session.nextPageToken)
     return {
       ...session,
       choices: places.data,
