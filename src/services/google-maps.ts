@@ -1,6 +1,6 @@
 import { googleApiKey, googleTimeoutMs } from '../config'
 import { Client } from '@googlemaps/google-maps-services-js'
-import { GeocodeResponse, LatLng, PlaceResponse } from '../types'
+import { GeocodeResponse, LatLng, PlaceDetailsResponse, PlaceResponse } from '../types'
 
 const client = new Client()
 
@@ -10,6 +10,7 @@ export const fetchGeocodeResults = (address: string): Promise<GeocodeResponse> =
       address,
       key: googleApiKey,
     },
+    timeout: googleTimeoutMs,
   })
 
 export const fetchPicture = (photoreference: string): Promise<string> =>
@@ -22,8 +23,26 @@ export const fetchPicture = (photoreference: string): Promise<string> =>
         photoreference,
       },
       responseType: 'stream',
+      timeout: googleTimeoutMs,
     })
     .then((response) => response.data.responseUrl)
+
+export const fetchPlaceDetails = (placeId: string): Promise<PlaceDetailsResponse> =>
+  client.placeDetails({
+    params: {
+      fields: [
+        'formatted_address',
+        'formatted_phone_number',
+        'international_phone_number',
+        'name',
+        'opening_hours',
+        'website',
+      ],
+      key: googleApiKey,
+      place_id: placeId,
+    },
+    timeout: googleTimeoutMs,
+  })
 
 export const fetchPlaceResults = (
   location: LatLng,
@@ -49,6 +68,7 @@ export const fetchPlaceResults = (
           name: restaurant.name,
           openHours: restaurant.opening_hours?.weekday_text,
           pic: restaurant.photos?.[0] && (await fetchPicture(restaurant.photos[0].photo_reference)),
+          placeId: restaurant.place_id,
           priceLevel: restaurant.price_level,
           rating: restaurant.rating,
           vicinity: restaurant.vicinity,

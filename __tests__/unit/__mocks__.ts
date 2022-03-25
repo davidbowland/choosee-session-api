@@ -4,6 +4,7 @@ export const restaurant: Restaurant = {
   name: 'Columbia',
   openHours: undefined,
   pic: 'Aap_uEDinckK9Ca3tIgxigpNxy1THsppgE5H9ie_tFEc5pDYIDTSC52cWtEWifvmRD6_jhRuo4IsiRY5AZK2Y6_NRv4i_vsANZZpvsXj4gfkT4iYwpAp_i7tVHYRAgJ03ki3JzRv5_ouIPOpa9_uYavGE5fdhADeXeGRhkZnGWPXu5RxJpD1',
+  placeId: '2345678ihbnmf',
   priceLevel: 1,
   rating: 2,
   vicinity: 'Columbia',
@@ -119,6 +120,104 @@ export const geocodeResult = {
   },
 }
 
+export const placeDetailsResponse = {
+  html_attributions: [],
+  result: {
+    formatted_address: '225 S 9th St, Columbia, MO 65201, USA',
+    formatted_phone_number: '(573) 449-2454',
+    international_phone_number: '+1 573-449-2454',
+    name: "Shakespeare's Pizza - Downtown",
+    opening_hours: {
+      open_now: true,
+      periods: [
+        {
+          close: {
+            day: 0,
+            time: '2200',
+          },
+          open: {
+            day: 0,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 1,
+            time: '2200',
+          },
+          open: {
+            day: 1,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 2,
+            time: '2200',
+          },
+          open: {
+            day: 2,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 3,
+            time: '2200',
+          },
+          open: {
+            day: 3,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 4,
+            time: '2200',
+          },
+          open: {
+            day: 4,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 5,
+            time: '2300',
+          },
+          open: {
+            day: 5,
+            time: '1100',
+          },
+        },
+        {
+          close: {
+            day: 6,
+            time: '2300',
+          },
+          open: {
+            day: 6,
+            time: '1100',
+          },
+        },
+      ],
+      weekday_text: [
+        'Monday: 11:00 AM – 10:00 PM',
+        'Tuesday: 11:00 AM – 10:00 PM',
+        'Wednesday: 11:00 AM – 10:00 PM',
+        'Thursday: 11:00 AM – 10:00 PM',
+        'Friday: 11:00 AM – 11:00 PM',
+        'Saturday: 11:00 AM – 11:00 PM',
+        'Sunday: 11:00 AM – 10:00 PM',
+      ],
+    },
+    website: 'http://www.shakespeares.com/',
+  },
+  status: 'OK',
+}
+
+export const placeId = 'ChIJk8cmpsa33IcRbKLpDn3le4g'
+
 export const placeResponse = {
   data: {
     html_attributions: [],
@@ -194,6 +293,7 @@ export const placeResult = {
       name: "Shakespeare's Pizza - Downtown",
       openHours: undefined,
       pic: 'a-picture-stream',
+      placeId: 'ChIJk8cmpsa33IcRbKLpDn3le4g',
       priceLevel: 2,
       rating: 4.6,
       vicinity: '225 South 9th Street, Columbia',
