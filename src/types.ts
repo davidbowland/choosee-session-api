@@ -10,9 +10,17 @@ export interface Restaurant {
   name: string
   openHours?: string[]
   pic?: string
+  placeId: string
   priceLevel: number
   rating: number
   vicinity: string
+}
+
+export interface RestaurantDetails extends Restaurant {
+  formattedAddress?: string
+  formattedPhoneNumber?: string
+  internationalPhoneNumber?: string
+  website?: string
 }
 
 export interface DecisionObject {

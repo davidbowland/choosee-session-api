@@ -1,13 +1,15 @@
-import { geocodeResult, placeResponse, placeResult } from '../__mocks__'
+import { geocodeResult, placeDetailsResponse, placeId, placeResponse, placeResult } from '../__mocks__'
 import { googleApiKey, googleTimeoutMs } from '@config'
-import { fetchGeocodeResults, fetchPicture, fetchPlaceResults } from '@services/google-maps'
+import { fetchGeocodeResults, fetchPicture, fetchPlaceDetails, fetchPlaceResults } from '@services/google-maps'
 
 const mockGeocode = jest.fn()
+const mockPlaceDetails = jest.fn()
 const mockPlacePhoto = jest.fn()
 const mockPlacesNearby = jest.fn()
 jest.mock('@googlemaps/google-maps-services-js', () => ({
   Client: jest.fn().mockReturnValue({
     geocode: (...args) => mockGeocode(...args),
+    placeDetails: (...args) => mockPlaceDetails(...args),
     placePhoto: (...args) => mockPlacePhoto(...args),
     placesNearby: (...args) => mockPlacesNearby(...args),
   }),
@@ -28,6 +30,7 @@ describe('queue', () => {
           address,
           key: googleApiKey,
         },
+        timeout: googleTimeoutMs,
       })
     })
 
@@ -55,12 +58,43 @@ describe('queue', () => {
           photoreference: '76tghbde56yuju',
         },
         responseType: 'stream',
+        timeout: googleTimeoutMs,
       })
     })
 
     test('expect results returned', async () => {
       const result = await fetchPicture(photoreference)
       expect(result).toEqual(picture)
+    })
+  })
+
+  describe('fetchPlaceDetails', () => {
+    beforeAll(() => {
+      mockPlaceDetails.mockResolvedValue(placeDetailsResponse)
+    })
+
+    test('expect parameters passed to placesNearby', async () => {
+      await fetchPlaceDetails(placeId)
+      expect(mockPlaceDetails).toHaveBeenCalledWith({
+        params: {
+          fields: [
+            'formatted_address',
+            'formatted_phone_number',
+            'international_phone_number',
+            'name',
+            'opening_hours',
+            'website',
+          ],
+          key: googleApiKey,
+          place_id: 'ChIJk8cmpsa33IcRbKLpDn3le4g',
+        },
+        timeout: googleTimeoutMs,
+      })
+    })
+
+    test('expect results returned', async () => {
+      const result = await fetchPlaceDetails(placeId)
+      expect(result).toEqual(placeDetailsResponse)
     })
   })
 
