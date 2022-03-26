@@ -1,7 +1,7 @@
 import { Client, PlacesNearbyRanking } from '@googlemaps/google-maps-services-js'
 
 import { GeocodeResponse, LatLng, PlaceDetailsResponse, PlaceResponse } from '../types'
-import { googleApiKey, googleTimeoutMs } from '../config'
+import { googleApiKey, googleImageMaxHeight, googleImageMaxWidth, googleTimeoutMs } from '../config'
 
 const client = new Client()
 
@@ -19,8 +19,8 @@ export const fetchPicture = (photoreference: string): Promise<string> =>
     .placePhoto({
       params: {
         key: googleApiKey,
-        maxheight: 200,
-        maxwidth: 350,
+        maxheight: googleImageMaxHeight,
+        maxwidth: googleImageMaxWidth,
         photoreference,
       },
       responseType: 'stream',

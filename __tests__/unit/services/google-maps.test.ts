@@ -1,6 +1,5 @@
 import { fetchGeocodeResults, fetchPicture, fetchPlaceDetails, fetchPlaceResults } from '@services/google-maps'
 import { geocodeResult, placeDetailsResponse, placeId, placeResponse, placeResult } from '../__mocks__'
-import { googleApiKey, googleTimeoutMs } from '@config'
 
 const mockGeocode = jest.fn()
 const mockPlaceDetails = jest.fn()
@@ -31,9 +30,9 @@ describe('queue', () => {
       expect(mockGeocode).toHaveBeenCalledWith({
         params: {
           address,
-          key: googleApiKey,
+          key: '98uhjgr4rgh0ijhgthjk',
         },
-        timeout: googleTimeoutMs,
+        timeout: 2500,
       })
     })
 
@@ -55,13 +54,13 @@ describe('queue', () => {
       await fetchPicture(photoreference)
       expect(mockPlacePhoto).toHaveBeenCalledWith({
         params: {
-          key: googleApiKey,
-          maxheight: 200,
-          maxwidth: 350,
+          key: '98uhjgr4rgh0ijhgthjk',
+          maxheight: 300,
+          maxwidth: 400,
           photoreference: '76tghbde56yuju',
         },
         responseType: 'stream',
-        timeout: googleTimeoutMs,
+        timeout: 2500,
       })
     })
 
@@ -88,10 +87,10 @@ describe('queue', () => {
             'opening_hours',
             'website',
           ],
-          key: googleApiKey,
+          key: '98uhjgr4rgh0ijhgthjk',
           place_id: 'ChIJk8cmpsa33IcRbKLpDn3le4g',
         },
-        timeout: googleTimeoutMs,
+        timeout: 2500,
       })
     })
 
@@ -114,13 +113,13 @@ describe('queue', () => {
       await fetchPlaceResults(location, type, openNow)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
-          key: googleApiKey,
+          key: '98uhjgr4rgh0ijhgthjk',
           location,
           opennow: true,
           rankby: 'distance',
           type,
         },
-        timeout: googleTimeoutMs,
+        timeout: 2500,
       })
     })
 
@@ -128,13 +127,13 @@ describe('queue', () => {
       await fetchPlaceResults(location, type, false)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
-          key: googleApiKey,
+          key: '98uhjgr4rgh0ijhgthjk',
           location,
           opennow: undefined,
           rankby: 'distance',
           type,
         },
-        timeout: googleTimeoutMs,
+        timeout: 2500,
       })
     })
 

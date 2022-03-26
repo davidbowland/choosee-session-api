@@ -499,6 +499,8 @@ Resources:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref SessionTable
           GOOGLE_API_KEY: !Ref GoogleApiKey
+          GOOGLE_IMAGE_MAX_HEIGHT: 300
+          GOOGLE_IMAGE_MAX_WIDTH: 400
       Events:
         ApiKey:
           Type: Api
@@ -556,6 +558,8 @@ Resources:
           CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref SessionTable
           GOOGLE_API_KEY: !Ref GoogleApiKey
+          GOOGLE_IMAGE_MAX_HEIGHT: 300
+          GOOGLE_IMAGE_MAX_WIDTH: 400
           ID_MIN_LENGTH: 3
           ID_MAX_LENGTH: 4
           SESSION_EXPIRE_HOURS: 24
