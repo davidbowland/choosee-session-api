@@ -1,14 +1,14 @@
+import { APIGatewayProxyEventV2, NewSession } from '@types'
+import {
+  extractJsonPatchFromEvent,
+  extractJwtFromEvent,
+  extractNewSessionFromEvent,
+  formatSession,
+} from '@utils/events'
 import { jsonPatchOperations, newSession } from '../__mocks__'
 import patchEventJson from '@events/patch-item.json'
 import postEventJson from '@events/post-item.json'
 import postSendTextEventJson from '@events/post-send-text.json'
-import { APIGatewayProxyEventV2, NewSession } from '@types'
-import {
-  extractNewSessionFromEvent,
-  extractJsonPatchFromEvent,
-  extractJwtFromEvent,
-  formatSession,
-} from '@utils/events'
 
 describe('events', () => {
   describe('formatSession', () => {

@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { dynamodbTableName } from '../config'
 import { Session, SessionBatch } from '../types'
+import { dynamodbTableName } from '../config'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
@@ -38,7 +38,7 @@ export const getDataById = (sessionId: string): Promise<Session> =>
 /* Scan for all items */
 
 const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): SessionBatch[] =>
-  response.Items.map((item) => ({ id: item.SessionId.S, data: JSON.parse(item.Data.S) }))
+  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.SessionId.S }))
 
 export const scanData = (): Promise<SessionBatch[]> =>
   dynamodb
@@ -75,14 +75,14 @@ export const setDataById = (sessionId: string, data: Session): Promise<DynamoDB.
   dynamodb
     .putItem({
       Item: {
-        SessionId: {
-          S: `${sessionId}`,
+        Data: {
+          S: JSON.stringify(data),
         },
         Expiration: {
           N: `${data.expiration ?? 0}`,
         },
-        Data: {
-          S: JSON.stringify(data),
+        SessionId: {
+          S: `${sessionId}`,
         },
       },
       TableName: dynamodbTableName,

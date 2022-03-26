@@ -1,6 +1,6 @@
+import { fetchGeocodeResults, fetchPicture, fetchPlaceDetails, fetchPlaceResults } from '@services/google-maps'
 import { geocodeResult, placeDetailsResponse, placeId, placeResponse, placeResult } from '../__mocks__'
 import { googleApiKey, googleTimeoutMs } from '@config'
-import { fetchGeocodeResults, fetchPicture, fetchPlaceDetails, fetchPlaceResults } from '@services/google-maps'
 
 const mockGeocode = jest.fn()
 const mockPlaceDetails = jest.fn()

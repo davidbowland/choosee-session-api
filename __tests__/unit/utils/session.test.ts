@@ -1,7 +1,7 @@
-import { placeDetailsResponse, placeResult, place, session } from '../__mocks__'
 import { mocked } from 'jest-mock'
 
 import * as googleMaps from '@services/google-maps'
+import { place, placeDetailsResponse, placeResult, session } from '../__mocks__'
 import { PlaceDetailsResponse } from '@types'
 import { updateSessionStatus } from '@utils/session'
 

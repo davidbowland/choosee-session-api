@@ -1,6 +1,7 @@
-import { googleApiKey, googleTimeoutMs } from '../config'
 import { Client, PlacesNearbyRanking } from '@googlemaps/google-maps-services-js'
+
 import { GeocodeResponse, LatLng, PlaceDetailsResponse, PlaceResponse } from '../types'
+import { googleApiKey, googleTimeoutMs } from '../config'
 
 const client = new Client()
 

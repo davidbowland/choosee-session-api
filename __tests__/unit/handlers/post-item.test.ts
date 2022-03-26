@@ -1,12 +1,13 @@
+import { mocked } from 'jest-mock'
+
+import * as dynamodb from '@services/dynamodb'
+import * as events from '@utils/events'
+import * as googleMaps from '@services/google-maps'
+import * as idGenerator from '@utils/id-generator'
+import { APIGatewayProxyEventV2, GeocodeResponse } from '@types'
 import { decodedJwt, geocodeResult, newSession, placeResult, sessionId } from '../__mocks__'
 import eventJson from '@events/post-item.json'
 import { postItemHandler } from '@handlers/post-item'
-import { mocked } from 'jest-mock'
-import * as dynamodb from '@services/dynamodb'
-import * as googleMaps from '@services/google-maps'
-import { APIGatewayProxyEventV2, GeocodeResponse } from '@types'
-import * as events from '@utils/events'
-import * as idGenerator from '@utils/id-generator'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -68,8 +69,8 @@ describe('post-item', () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(JSON.parse(result.body)).toEqual({
-        sessionId: 'abc123',
         location: 'http://choosee.bowland.link/s/abc123',
+        sessionId: 'abc123',
       })
     })
 
@@ -82,8 +83,8 @@ describe('post-item', () => {
       expect(JSON.parse(result.body)).toEqual(
         expect.objectContaining({
           ...newSession,
-          sessionId: 'abc123',
           location: 'http://choosee.bowland.link/s/abc123',
+          sessionId: 'abc123',
         })
       )
     })

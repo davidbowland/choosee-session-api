@@ -1,9 +1,9 @@
-import { link, sessionId } from '../__mocks__'
-import eventJson from '@events/delete-item.json'
-import { deleteByIdHandler } from '@handlers/delete-item'
-import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
+import { session, sessionId } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
+import { deleteByIdHandler } from '@handlers/delete-item'
+import eventJson from '@events/delete-item.json'
+import { mocked } from 'jest-mock'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -14,7 +14,7 @@ describe('delete-item', () => {
 
   beforeAll(() => {
     mocked(dynamodb).deleteDataById.mockResolvedValue(undefined)
-    mocked(dynamodb).getDataById.mockResolvedValue(link)
+    mocked(dynamodb).getDataById.mockResolvedValue(session)
   })
 
   describe('deleteByIdHandler', () => {
@@ -37,7 +37,7 @@ describe('delete-item', () => {
 
     test('expect OK when index exists', async () => {
       const result = await deleteByIdHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify(link) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify(session) })
     })
 
     test('expect NO_CONTENT when index does not exist', async () => {

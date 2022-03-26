@@ -1,5 +1,5 @@
-import { session, sessionId } from '../__mocks__'
 import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
+import { session, sessionId } from '../__mocks__'
 
 const mockDeleteItem = jest.fn()
 const mockGetItem = jest.fn()
@@ -55,7 +55,7 @@ describe('dynamodb', () => {
   describe('scanData', () => {
     beforeAll(() => {
       mockScanTable.mockResolvedValue({
-        Items: [{ SessionId: { S: `${sessionId}` }, Data: { S: JSON.stringify(session) } }],
+        Items: [{ Data: { S: JSON.stringify(session) }, SessionId: { S: `${sessionId}` } }],
       })
     })
 
@@ -95,14 +95,14 @@ describe('dynamodb', () => {
       await setDataById(sessionId, session)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
-          SessionId: {
-            S: `${sessionId}`,
+          Data: {
+            S: JSON.stringify(session),
           },
           Expiration: {
             N: `${session.expiration}`,
           },
-          Data: {
-            S: JSON.stringify(session),
+          SessionId: {
+            S: `${sessionId}`,
           },
         },
         TableName: 'choosee-table',

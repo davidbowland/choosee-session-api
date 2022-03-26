@@ -1,6 +1,6 @@
-import { getDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { extractJwtFromEvent } from '../utils/events'
+import { getDataById } from '../services/dynamodb'
 import { log } from '../utils/logging'
 import status from '../utils/status'
 

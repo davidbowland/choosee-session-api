@@ -1,12 +1,12 @@
 import { applyPatch } from 'fast-json-patch'
 
-import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
-import { getDataById, setDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Session } from '../types'
 import { extractJsonPatchFromEvent, extractJwtFromEvent } from '../utils/events'
+import { getDataById, setDataById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
-import { updateSessionStatus } from '../utils/session'
+import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import status from '../utils/status'
+import { updateSessionStatus } from '../utils/session'
 
 const applyJsonPatch = async (
   session: Session,

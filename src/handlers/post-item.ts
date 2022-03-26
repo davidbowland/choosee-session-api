@@ -1,10 +1,10 @@
-import { corsDomain } from '../config'
-import { setDataById } from '../services/dynamodb'
-import { fetchGeocodeResults, fetchPlaceResults } from '../services/google-maps'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, NewSession, Session, StringObject } from '../types'
 import { extractJwtFromEvent, extractNewSessionFromEvent } from '../utils/events'
-import { getNextId } from '../utils/id-generator'
+import { fetchGeocodeResults, fetchPlaceResults } from '../services/google-maps'
 import { log, logError } from '../utils/logging'
+import { corsDomain } from '../config'
+import { getNextId } from '../utils/id-generator'
+import { setDataById } from '../services/dynamodb'
 import status from '../utils/status'
 
 const createNewSession = async (newSession: NewSession, jwt?: StringObject): Promise<APIGatewayProxyResultV2<any>> => {
@@ -41,13 +41,13 @@ const createNewSession = async (newSession: NewSession, jwt?: StringObject): Pro
     if (jwt === undefined) {
       return {
         ...status.CREATED,
-        body: JSON.stringify({ ...session, sessionId, location }),
+        body: JSON.stringify({ ...session, location, sessionId }),
         headers: { Location: location },
       }
     }
     return {
       ...status.CREATED,
-      body: JSON.stringify({ sessionId, location }),
+      body: JSON.stringify({ location, sessionId }),
       headers: { Location: location },
     }
   } catch (error) {

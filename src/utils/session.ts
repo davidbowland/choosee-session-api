@@ -1,6 +1,6 @@
-import { logError } from './logging'
-import { fetchPlaceDetails, fetchPlaceResults } from '../services/google-maps'
 import { DecisionObject, Place, PlaceDetails, Session } from '../types'
+import { fetchPlaceDetails, fetchPlaceResults } from '../services/google-maps'
+import { logError } from './logging'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
   choiceNames.every((name) => name in decisions)
