@@ -302,3 +302,76 @@ export const placeResult = {
   nextPageToken:
     'Aap_uED5ulA1bsoLWnkyaDlG1aoxuxgcx8pxnXBzkdbURX3PZwuzXgFtdbkLlJxjvqqCRa1iug_VSAiISjiApmg9yLOXQgWjMDbXuAGnVZaFARBlnfsRe5tjjVx_PKYEZv7iHNYwcvXR9eWvp8k1XMDBkj7Ja-YpLe9r8eAy1nZC-O9-1_M-lRNMNBr3YxCvWY57VXcP5F6-EPpj5vMAoHQ2e65TBGofxvsAkUX8HSvbHTKDCcYoQJUmwJQfeamM9H5stiJ137Ip98aMrEASSqCYCf9osGhRx7lbjZl4jUYKS-Y-8BejokmFWLtldff0SKuKQQrlef4E0xrdXr1jUh-uRVZTJoCq6Ki1AhiSM9qEvl0_EHYzAMbeQ9bCn0O_AlO6xstNfozKpz8SXXEiqpWaGXyaUqz-NU2facRhhZqPROSb',
 }
+
+export const reverseGeocodeResult = {
+  plus_code: {
+    compound_code: 'VXX7+59P Washington, DC, USA',
+    global_code: '87C4VXX7+59P',
+  },
+  results: [
+    {
+      address_components: [
+        {
+          long_name: '1600',
+          short_name: '1600',
+          types: ['street_number'],
+        },
+        {
+          long_name: 'Pennsylvania Avenue Northwest',
+          short_name: 'Pennsylvania Avenue NW',
+          types: ['route'],
+        },
+        {
+          long_name: 'Northwest Washington',
+          short_name: 'Northwest Washington',
+          types: ['neighborhood', 'political'],
+        },
+        {
+          long_name: 'Washington',
+          short_name: 'Washington',
+          types: ['locality', 'political'],
+        },
+        {
+          long_name: 'District of Columbia',
+          short_name: 'DC',
+          types: ['administrative_area_level_1', 'political'],
+        },
+        {
+          long_name: 'United States',
+          short_name: 'US',
+          types: ['country', 'political'],
+        },
+        {
+          long_name: '20500',
+          short_name: '20500',
+          types: ['postal_code'],
+        },
+      ],
+      formatted_address: '1600 Pennsylvania Avenue NW, Washington, DC 20500, USA',
+      geometry: {
+        location: {
+          lat: 38.8976633,
+          lng: -77.03657389999999,
+        },
+        location_type: 'ROOFTOP',
+        viewport: {
+          northeast: {
+            lat: 38.8990122802915,
+            lng: -77.0352249197085,
+          },
+          southwest: {
+            lat: 38.8963143197085,
+            lng: -77.0379228802915,
+          },
+        },
+      },
+      place_id: 'ChIJcw5BAI63t4kRj5qZY1MSyAo',
+      plus_code: {
+        compound_code: 'VXX7+39 Washington, DC, USA',
+        global_code: '87C4VXX7+39',
+      },
+      types: ['street_address'],
+    },
+  ],
+  status: 'OK',
+}

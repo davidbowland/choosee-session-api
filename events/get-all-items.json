@@ -2,7 +2,7 @@
   "requestContext": {
     "http": {
       "method": "GET",
-      "path": "/v1/choosee"
+      "path": "/v1/sessions"
     }
   }
 }

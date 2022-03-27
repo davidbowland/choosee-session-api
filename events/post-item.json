@@ -3,7 +3,7 @@
   "requestContext": {
     "http": {
       "method": "POST",
-      "path": "/v1/choosee"
+      "path": "/v1/sessions"
     }
   }
 }

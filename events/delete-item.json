@@ -5,7 +5,7 @@
   "requestContext": {
     "http": {
       "method": "DELETE",
-      "path": "/v1/choosee/abc123"
+      "path": "/v1/sessions/abc123"
     }
   }
 }

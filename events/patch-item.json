@@ -6,7 +6,7 @@
   "requestContext": {
     "http": {
       "method": "PATCH",
-      "path": "/v1/choosee/abc123"
+      "path": "/v1/sessions/abc123"
     }
   }
 }

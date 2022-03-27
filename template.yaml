@@ -433,6 +433,59 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetStatusByIdLogGroup
 
+  GetReverseGeocodeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-reverse-geocode.getReverseGeocodeHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api reverse geocode
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Environment:
+        Variables:
+          GOOGLE_API_KEY: !Ref GoogleApiKey
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /reverse-geocode
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /reverse-geocode
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+
+  GetReverseGeocodeLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetReverseGeocodeFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetReverseGeocodeFunction}
+      RetentionInDays: 30
+
+  GetReverseGeocodeLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetReverseGeocodeLogGroup
+
   PatchItemFunction:
     Type: AWS::Serverless::Function
     Properties:

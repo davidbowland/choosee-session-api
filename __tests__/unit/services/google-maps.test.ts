@@ -1,16 +1,35 @@
-import { fetchGeocodeResults, fetchPicture, fetchPlaceDetails, fetchPlaceResults } from '@services/google-maps'
-import { geocodeResult, placeDetailsResponse, placeId, placeResponse, placeResult } from '../__mocks__'
+import {
+  fetchAddressFromGeocode,
+  fetchGeocodeResults,
+  fetchPicture,
+  fetchPlaceDetails,
+  fetchPlaceResults,
+} from '@services/google-maps'
+import {
+  geocodeResult,
+  placeDetailsResponse,
+  placeId,
+  placeResponse,
+  placeResult,
+  reverseGeocodeResult,
+} from '../__mocks__'
 
 const mockGeocode = jest.fn()
 const mockPlaceDetails = jest.fn()
 const mockPlacePhoto = jest.fn()
 const mockPlacesNearby = jest.fn()
+const mockReverseGeocode = jest.fn()
 jest.mock('@googlemaps/google-maps-services-js', () => ({
+  AddressType: {
+    postal_code: 'postal_code',
+    street_address: 'street_address',
+  },
   Client: jest.fn().mockReturnValue({
     geocode: (...args) => mockGeocode(...args),
     placeDetails: (...args) => mockPlaceDetails(...args),
     placePhoto: (...args) => mockPlacePhoto(...args),
     placesNearby: (...args) => mockPlacesNearby(...args),
+    reverseGeocode: (...args) => mockReverseGeocode(...args),
   }),
   PlacesNearbyRanking: {
     distance: 'distance',
@@ -18,6 +37,35 @@ jest.mock('@googlemaps/google-maps-services-js', () => ({
 }))
 
 describe('queue', () => {
+  describe('fetchAddressFromGeocode', () => {
+    const lat = 38.897957
+    const lng = -77.03656
+
+    beforeAll(() => {
+      mockReverseGeocode.mockResolvedValue(reverseGeocodeResult)
+    })
+
+    test('expect address passed to geocode', async () => {
+      await fetchAddressFromGeocode(lat, lng)
+      expect(mockReverseGeocode).toHaveBeenCalledWith({
+        params: {
+          key: '98uhjgr4rgh0ijhgthjk',
+          latlng: {
+            lat,
+            lng,
+          },
+          result_type: ['street_address', 'postal_code'],
+        },
+        timeout: 2500,
+      })
+    })
+
+    test('expect results returned', async () => {
+      const result = await fetchAddressFromGeocode(lat, lng)
+      expect(result).toEqual(reverseGeocodeResult)
+    })
+  })
+
   describe('fetchGeocodeResults', () => {
     const address = '90210'
 

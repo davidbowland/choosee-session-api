@@ -3,7 +3,7 @@
   "requestContext": {
     "http": {
       "method": "POST",
-      "path": "/v1/choosee/abc123/send-text"
+      "path": "/v1/sessions/abc123/send-text"
     }
   },
   "pathParameters": {

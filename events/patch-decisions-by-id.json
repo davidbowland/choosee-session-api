@@ -7,7 +7,7 @@
   "requestContext": {
     "http": {
       "method": "PATCH",
-      "path": "/v1/choosee/abc123/decisions/%2B15551234567"
+      "path": "/v1/sessions/abc123/decisions/%2B15551234567"
     }
   },
   "headers": {

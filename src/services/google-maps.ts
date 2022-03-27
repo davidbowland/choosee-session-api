@@ -1,9 +1,22 @@
-import { Client, PlacesNearbyRanking } from '@googlemaps/google-maps-services-js'
+import { AddressType, Client, PlacesNearbyRanking, ReverseGeocodeResponse } from '@googlemaps/google-maps-services-js'
 
 import { GeocodeResponse, LatLng, PlaceDetailsResponse, PlaceResponse } from '../types'
 import { googleApiKey, googleImageMaxHeight, googleImageMaxWidth, googleTimeoutMs } from '../config'
 
 const client = new Client()
+
+export const fetchAddressFromGeocode = (lat: number, lng: number): Promise<ReverseGeocodeResponse> =>
+  client.reverseGeocode({
+    params: {
+      key: googleApiKey,
+      latlng: {
+        lat,
+        lng,
+      },
+      result_type: [AddressType.street_address, AddressType.postal_code],
+    },
+    timeout: googleTimeoutMs,
+  })
 
 export const fetchGeocodeResults = (address: string): Promise<GeocodeResponse> =>
   client.geocode({
