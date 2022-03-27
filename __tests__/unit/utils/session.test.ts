@@ -108,6 +108,18 @@ describe('sessions', () => {
           expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
         )
       })
+
+      test('expect winner unchanged when already winner', async () => {
+        const newPlace = { ...place, name: 'Bobs Burgers' }
+        const decisionMatchSession = {
+          ...session,
+          decisions: { '+15551234567': { Columbia: true } },
+          status: { current: 'winner' as any, pageId: 0, winner: newPlace },
+          voterCount: 1,
+        }
+        const result = await updateSessionStatus(decisionMatchSession)
+        expect(result).toEqual(expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: newPlace } }))
+      })
     })
 
     describe('deciding', () => {

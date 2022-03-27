@@ -33,7 +33,11 @@ const enhanceWithDetails = async (place: Place): Promise<PlaceDetails> => {
 }
 
 export const updateSessionStatus = async (session: Session): Promise<Session> => {
-  if (Object.keys(session.decisions).length < session.voterCount) {
+  if (
+    Object.keys(session.decisions).length < session.voterCount ||
+    session.status.current === 'winner' ||
+    session.status.current === 'finished'
+  ) {
     return session
   }
 
