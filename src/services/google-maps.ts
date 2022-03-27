@@ -94,6 +94,7 @@ export const fetchPlaceResults = async (
     return result
   }
 
+  await new Promise((resolve) => setTimeout(resolve, 1000))
   const otherPages = await fetchPlaceResults(location, type, openNow, pages - 1, result.nextPageToken)
   return { data: [...result.data, ...otherPages.data], nextPageToken: otherPages.nextPageToken }
 }
