@@ -44,6 +44,7 @@ export interface Session {
   location: LatLng
   nextPageToken: string
   openNow: boolean
+  pagesPerRound: number
   status: StatusObject
   type: PlaceType
   voterCount: number
@@ -58,6 +59,7 @@ export interface NewSession {
   address: string
   expiration?: number
   openNow?: boolean
+  pagesPerRound?: number
   type: PlaceType
   voterCount: number
 }

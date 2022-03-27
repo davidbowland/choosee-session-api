@@ -130,6 +130,13 @@ describe('sessions', () => {
         }
         const result = await updateSessionStatus(decisionNoMatchSession)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
+        expect(mocked(googleMaps).fetchPlaceResults).toHaveBeenCalledWith(
+          { lat: 38.9517053, lng: -92.3340724 },
+          'restaurant',
+          true,
+          1,
+          session.nextPageToken
+        )
       })
 
       test('expect status to be finished when no more pages', async () => {

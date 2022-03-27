@@ -58,35 +58,42 @@ export const fetchPlaceDetails = (placeId: string): Promise<PlaceDetailsResponse
     timeout: googleTimeoutMs,
   })
 
-export const fetchPlaceResults = (
+export const fetchPlaceResults = async (
   location: LatLng,
   type: string,
   openNow: boolean,
+  pages: number,
   nextPageToken?: string
-): Promise<PlaceResponse> =>
-  client
-    .placesNearby({
-      params: {
-        key: googleApiKey,
-        location,
-        opennow: openNow || undefined,
-        pagetoken: nextPageToken,
-        rankby: PlacesNearbyRanking.distance,
-        type,
-      },
-      timeout: googleTimeoutMs,
-    })
-    .then(async (response) => ({
-      data: await Promise.all(
-        response.data.results.map(async (place) => ({
-          name: place.name,
-          openHours: place.opening_hours?.weekday_text,
-          pic: place.photos?.[0] && (await fetchPicture(place.photos[0].photo_reference)),
-          placeId: place.place_id,
-          priceLevel: place.price_level,
-          rating: place.rating,
-          vicinity: place.vicinity,
-        }))
-      ),
-      nextPageToken: response.data.next_page_token,
-    }))
+): Promise<PlaceResponse> => {
+  const response = await client.placesNearby({
+    params: {
+      key: googleApiKey,
+      location,
+      opennow: openNow || undefined,
+      pagetoken: nextPageToken,
+      rankby: PlacesNearbyRanking.distance,
+      type,
+    },
+    timeout: googleTimeoutMs,
+  })
+  const result = {
+    data: await Promise.all(
+      response.data.results.map(async (place) => ({
+        name: place.name,
+        openHours: place.opening_hours?.weekday_text,
+        pic: place.photos?.[0] && (await fetchPicture(place.photos[0].photo_reference)),
+        placeId: place.place_id,
+        priceLevel: place.price_level,
+        rating: place.rating,
+        vicinity: place.vicinity,
+      }))
+    ),
+    nextPageToken: response.data.next_page_token,
+  }
+  if (pages < 2 || !result.nextPageToken) {
+    return result
+  }
+
+  const otherPages = await fetchPlaceResults(location, type, openNow, pages - 1, result.nextPageToken)
+  return { data: [...result.data, ...otherPages.data], nextPageToken: otherPages.nextPageToken }
+}

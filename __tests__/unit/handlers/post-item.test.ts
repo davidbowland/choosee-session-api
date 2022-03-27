@@ -68,6 +68,12 @@ describe('post-item', () => {
     test('expect CREATED and body', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
+      expect(mocked(googleMaps).fetchPlaceResults).toHaveBeenCalledWith(
+        { lat: 39.0013395, lng: -92.3128326 },
+        'restaurant',
+        undefined,
+        undefined
+      )
       expect(JSON.parse(result.body)).toEqual({
         location: 'http://choosee.bowland.link/s/abc123',
         sessionId: 'abc123',

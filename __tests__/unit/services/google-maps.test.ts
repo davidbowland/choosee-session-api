@@ -151,6 +151,7 @@ describe('queue', () => {
   describe('fetchPlaceResults', () => {
     const location = { lat: 39, lng: -92 }
     const openNow = true
+    const pages = 1
     const type = 'restaurant'
 
     beforeAll(() => {
@@ -158,7 +159,7 @@ describe('queue', () => {
     })
 
     test('expect parameters passed to placesNearby', async () => {
-      await fetchPlaceResults(location, type, openNow)
+      await fetchPlaceResults(location, type, openNow, pages)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
           key: '98uhjgr4rgh0ijhgthjk',
@@ -172,7 +173,7 @@ describe('queue', () => {
     })
 
     test('expect undefined used instead of false for opennow', async () => {
-      await fetchPlaceResults(location, type, false)
+      await fetchPlaceResults(location, type, false, pages)
       expect(mockPlacesNearby).toHaveBeenCalledWith({
         params: {
           key: '98uhjgr4rgh0ijhgthjk',
@@ -186,14 +187,28 @@ describe('queue', () => {
     })
 
     test('expect results returned', async () => {
-      const result = await fetchPlaceResults(location, type, openNow)
+      const result = await fetchPlaceResults(location, type, openNow, pages)
       expect(result).toEqual(placeResult)
+    })
+
+    test('expect multiple pages of results returned', async () => {
+      const result = await fetchPlaceResults(location, type, openNow, 2)
+      expect(result).toEqual({
+        data: [...placeResult.data, ...placeResult.data],
+        nextPageToken: placeResult.nextPageToken,
+      })
+    })
+
+    test('expect max pages when multiple pages requested', async () => {
+      mockPlacesNearby.mockResolvedValueOnce({ data: { ...placeResponse.data, next_page_token: undefined } })
+      const result = await fetchPlaceResults(location, type, openNow, 2)
+      expect(result).toEqual({ data: placeResult.data, nextPageToken: undefined })
     })
 
     test('expect undefined for missing values', async () => {
       const place = { ...placeResponse.data.results[0], opening_hours: undefined, photos: undefined }
       mockPlacesNearby.mockResolvedValueOnce({ ...placeResponse, data: { results: [place] } })
-      const result = await fetchPlaceResults(location, type, openNow)
+      const result = await fetchPlaceResults(location, type, openNow, pages)
       expect(result).toEqual({ data: [{ ...placeResult.data[0], pic: undefined }] })
     })
   })

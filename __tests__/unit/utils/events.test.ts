@@ -22,6 +22,11 @@ describe('events', () => {
       expect(() => formatSession(tooLateExpirationSession)).toThrow()
     })
 
+    test.each([0, 4])('expect error on invalid pagesPerRound (%s)', (pagesPerRound) => {
+      const invalidSession = { ...newSession, pagesPerRound } as NewSession
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
     test.each([undefined, 'fnord'])('expect error on invalid type (%s)', (type) => {
       const invalidSession = { ...newSession, type } as NewSession
       expect(() => formatSession(invalidSession)).toThrow()
