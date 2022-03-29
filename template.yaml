@@ -676,7 +676,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /start-prune
+            Path: /sessions/start-prune
             Method: post
             Auth:
               ApiKeyRequired: true
@@ -847,7 +847,7 @@ Resources:
                 {
                   "resources": <resources>,
                   "request": {
-                    "url": "https://${Domain}/v1/start-prune",
+                    "url": "https://${Domain}/v1/sessions/start-prune",
                     "method": "POST",
                     "data": { }
                   },
