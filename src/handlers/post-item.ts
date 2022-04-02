@@ -2,7 +2,6 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, NewSession, Session, S
 import { extractJwtFromEvent, extractNewSessionFromEvent } from '../utils/events'
 import { fetchGeocodeResults, fetchPlaceResults } from '../services/google-maps'
 import { log, logError } from '../utils/logging'
-import { corsDomain } from '../config'
 import { getNextId } from '../utils/id-generator'
 import { setDataById } from '../services/dynamodb'
 import status from '../utils/status'
@@ -38,18 +37,15 @@ const createNewSession = async (newSession: NewSession, jwt?: StringObject): Pro
     }
     log('Creating session', { session, sessionId })
     await setDataById(sessionId, session)
-    const location = `${corsDomain}/s/${sessionId}`
     if (jwt === undefined) {
       return {
         ...status.CREATED,
-        body: JSON.stringify({ ...session, location, sessionId }),
-        headers: { Location: location },
+        body: JSON.stringify({ ...session, sessionId }),
       }
     }
     return {
       ...status.CREATED,
-      body: JSON.stringify({ location, sessionId }),
-      headers: { Location: location },
+      body: JSON.stringify({ sessionId }),
     }
   } catch (error) {
     logError(error)

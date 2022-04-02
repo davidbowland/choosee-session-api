@@ -608,7 +608,6 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref SessionTable
           GOOGLE_API_KEY: !Ref GoogleApiKey
           GOOGLE_IMAGE_MAX_HEIGHT: 300

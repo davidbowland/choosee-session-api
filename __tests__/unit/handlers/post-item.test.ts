@@ -75,7 +75,6 @@ describe('post-item', () => {
         undefined
       )
       expect(JSON.parse(result.body)).toEqual({
-        location: 'http://choosee.bowland.link/s/abc123',
         sessionId: 'abc123',
       })
     })
@@ -89,7 +88,6 @@ describe('post-item', () => {
       expect(JSON.parse(result.body)).toEqual(
         expect.objectContaining({
           ...newSession,
-          location: 'http://choosee.bowland.link/s/abc123',
           sessionId: 'abc123',
         })
       )
@@ -110,11 +108,6 @@ describe('post-item', () => {
           },
         })
       )
-    })
-
-    test('expect Location header', async () => {
-      const result = await postItemHandler(event)
-      expect(result).toEqual(expect.objectContaining({ headers: { Location: 'http://choosee.bowland.link/s/abc123' } }))
     })
   })
 })
