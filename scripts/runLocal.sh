@@ -15,7 +15,6 @@ SAM_TEMPLATE=template.yaml
 sam build --template ${SAM_TEMPLATE}
 
 # Start the API locally
-export API_URL='https://choosee-session-api.bowland.link/v1'
 export CORS_DOMAIN='http://choosee.bowland.link'
 export DYNAMODB_TABLE_NAME=choosee-session-api-test
 export GOOGLE_API_KEY=$(aws ssm get-parameter --name google-places-api | jq -r .Parameter.Value)
