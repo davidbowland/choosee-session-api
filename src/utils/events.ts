@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { APIGatewayProxyEventV2, NewSession, PatchOperation, StringObject } from '../types'
 import { sessionExpireHours } from '../config'
 
-// 60 minutes * 60 seconds * 1000 milliseconds = 360_000
+// 60 minutes * 60 seconds * 1000 milliseconds = 3_600_000
 const EXPIRATION_DURATION = sessionExpireHours * 3_600_000
 
 /* Choosee */

@@ -662,7 +662,7 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 60
-      Description: choosee-session-api post item
+      Description: choosee-session-api post start prune
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:

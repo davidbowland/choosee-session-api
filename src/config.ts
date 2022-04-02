@@ -25,7 +25,7 @@ export const googleTimeoutMs = 2500
 export const mutateObjectOnJsonPatch = false
 export const throwOnInvalidJsonPatch = true
 
-// Choosee
+// Sessions
 
 export const idMinLength = parseInt(process.env.ID_MIN_LENGTH as string, 10)
 export const idMaxLength = parseInt(process.env.ID_MAX_LENGTH as string, 10)
