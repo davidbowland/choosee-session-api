@@ -1,5 +1,5 @@
 import { DecisionObject, Place, PlaceDetails, Session } from '../types'
-import { fetchPlaceDetails, fetchPlaceResults } from '../services/google-maps'
+import { advanceRounds, fetchChoices, fetchPlaceDetails } from '../services/maps'
 import { logError } from './logging'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
@@ -14,7 +14,7 @@ const enhanceWithDetails = async (place: Place): Promise<PlaceDetails> => {
   if (place.placeId) {
     try {
       const winnerDetails = await fetchPlaceDetails(place.placeId)
-      const winnerResult = winnerDetails.data.result
+      const winnerResult = winnerDetails.result
       if (winnerResult) {
         return {
           ...place,
@@ -41,7 +41,8 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
     return session
   }
 
-  const choiceNames = session.choices.map((value) => value.name)
+  const sessionChoices = await fetchChoices(session.choiceId)
+  const choiceNames = sessionChoices.map((value) => value.name)
   const allDecisions = Object.values(session.decisions)
   const allDecisionsComplete = allDecisions.every((decisions) => areDecisionsComplete(choiceNames, decisions))
   if (!allDecisionsComplete) {
@@ -51,7 +52,7 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
   const winners = allDecisions.map(extractPositiveDecisions).reduce(intersection)
   if (winners.length > 0) {
     const randomWinner = winners[Math.floor(Math.random() * winners.length)]
-    const winnerPlace = session.choices.filter((place) => place.name === randomWinner)[0]
+    const winnerPlace = sessionChoices.filter((place) => place.name === randomWinner)[0]
     return {
       ...session,
       status: {
@@ -62,30 +63,12 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
     }
   }
 
-  if (session.nextPageToken) {
-    const places = await fetchPlaceResults(
-      session.location,
-      session.type,
-      session.openNow,
-      session.pagesPerRound,
-      session.nextPageToken
-    )
-    return {
-      ...session,
-      choices: places.data,
-      nextPageToken: places.nextPageToken,
-      status: {
-        current: places.data.length > 0 ? 'deciding' : 'finished',
-        pageId: session.status.pageId + 1,
-      },
-    }
-  } else {
-    return {
-      ...session,
-      status: {
-        ...session.status,
-        current: 'finished',
-      },
-    }
+  const newChoices = await advanceRounds(session.choiceId)
+  return {
+    ...session,
+    status: {
+      current: newChoices.choices.length > 0 ? 'deciding' : 'finished',
+      pageId: session.status.pageId + 1,
+    },
   }
 }
