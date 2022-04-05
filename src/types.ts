@@ -35,14 +35,13 @@ export interface StatusObject {
 
 export interface Session {
   address: string
-  choices: Place[]
+  choiceId: string
   decisions: {
     [key: string]: DecisionObject
   }
   expiration: number
   lastAccessed: number
   location: LatLng
-  nextPageToken: string
   openNow: boolean
   pagesPerRound: number
   status: StatusObject
@@ -62,6 +61,28 @@ export interface NewSession {
   pagesPerRound?: number
   type: PlaceType
   voterCount: number
+}
+
+export interface Choice {
+  address: string
+  choiceId?: string
+  choices: Place[]
+  expiration: number
+  latLng: LatLng
+  nextPageToken: string
+  openNow: boolean
+  pagesPerRound: number
+  type: PlaceType
+}
+
+export interface NewChoice {
+  address: string
+  expiration?: number
+  lat?: number
+  lng?: number
+  openNow?: boolean
+  pagesPerRound?: number
+  type: PlaceType
 }
 
 export interface PlaceResponse {

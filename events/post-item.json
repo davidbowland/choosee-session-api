@@ -1,5 +1,5 @@
 {
-  "body": "{\"address\":\"90210\",\"type\":\"restaurant\",\"voterCount\":2}",
+  "body": "{\"address\":\"Columbia, MO 65203, USA\",\"type\":\"restaurant\",\"voterCount\":2}",
   "requestContext": {
     "http": {
       "method": "POST",

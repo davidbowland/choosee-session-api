@@ -13,17 +13,15 @@ export const userPoolId = process.env.USER_POOL_ID as string
 
 export const dynamodbTableName = process.env.DYNAMODB_TABLE_NAME as string
 
-// Google
-
-export const googleApiKey = process.env.GOOGLE_API_KEY as string
-export const googleImageMaxHeight = parseInt(process.env.GOOGLE_IMAGE_MAX_HEIGHT as string, 10)
-export const googleImageMaxWidth = parseInt(process.env.GOOGLE_IMAGE_MAX_WIDTH as string, 10)
-export const googleTimeoutMs = 2500
-
 // JsonPatch
 
 export const mutateObjectOnJsonPatch = false
 export const throwOnInvalidJsonPatch = true
+
+// Maps API
+
+export const mapsApiKey = process.env.MAPS_API_KEY as string
+export const mapsApiUrl = process.env.MAPS_API_URL as string
 
 // Sessions
 

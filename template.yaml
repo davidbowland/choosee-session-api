@@ -13,9 +13,9 @@ Parameters:
       - prod
       - test
     Description: Environment for deploy
-  GoogleApiKey:
+  MapsApiKey:
     Type: String
-    Description: API key for Google Maps API
+    Description: API key for choosee-maps-api
   SmsApiKey:
     Type: String
     Description: API key for sms-queue-api
@@ -29,6 +29,7 @@ Mappings:
       domain: choosee-session-api.dbowland.com
       domainInternal: choosee-session-api-internal.dbowland.com
       logStreamFunction: log-subscriber
+      mapsApiUrl: https://choosee-maps-api-internal.dbowland.com/v1
       schedulerFunction: scheduler-service
       sessionTable: choosee-session-api
       smsApiUrl: https://sms-queue-api.dbowland.com/v1
@@ -42,6 +43,7 @@ Mappings:
       domain: choosee-session-api.bowland.link
       domainInternal: choosee-session-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
+      mapsApiUrl: https://choosee-maps-api-internal.bowland.link/v1
       schedulerFunction: scheduler-service-test
       sessionTable: choosee-session-api-test
       smsApiUrl: https://sms-queue-api.bowland.link/v1
@@ -248,6 +250,14 @@ Resources:
             Method: get
             Auth:
               ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}
+            Method: get
+            Auth:
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
@@ -267,61 +277,6 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetByIdLogGroup
-
-  GetChoicesByIdFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers/get-choices-by-id.getChoicesByIdHandler
-      CodeUri: './dist'
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 10
-      Description: choosee-session-api get choices by ID
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
-            TableName: !Ref SessionTable
-      Environment:
-        Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
-      Events:
-        ApiKey:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /sessions/{sessionId}/choices
-            Method: get
-            Auth:
-              ApiKeyRequired: true
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /sessions/{sessionId}/choices
-            Method: get
-            Auth:
-              Authorizer: NONE
-      Tags:
-        'created-by': 'choosee-session-api'
-        'created-for': 'choosee'
-
-  GetChoicesByIdLogGroup:
-    Type: AWS::Logs::LogGroup
-    DependsOn: GetChoicesByIdFunction
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${GetChoicesByIdFunction}
-      RetentionInDays: 30
-
-  GetChoicesByIdLogGroupSubscription:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !Sub
-        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
-        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
-      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
-      LogGroupName: !Ref GetChoicesByIdLogGroup
 
   GetDecisionsByIdFunction:
     Type: AWS::Serverless::Function
@@ -433,59 +388,6 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetStatusByIdLogGroup
 
-  GetReverseGeocodeFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers/get-reverse-geocode.getReverseGeocodeHandler
-      CodeUri: './dist'
-      Runtime: nodejs14.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 10
-      Description: choosee-session-api reverse geocode
-      Policies:
-        - AWSLambdaBasicExecutionRole
-      Environment:
-        Variables:
-          GOOGLE_API_KEY: !Ref GoogleApiKey
-      Events:
-        ApiKey:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /reverse-geocode
-            Method: get
-            Auth:
-              ApiKeyRequired: true
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /reverse-geocode
-            Method: get
-            Auth:
-              Authorizer: CognitoAuthorizer
-      Tags:
-        'created-by': 'choosee-session-api'
-        'created-for': 'choosee'
-
-  GetReverseGeocodeLogGroup:
-    Type: AWS::Logs::LogGroup
-    DependsOn: GetReverseGeocodeFunction
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${GetReverseGeocodeFunction}
-      RetentionInDays: 30
-
-  GetReverseGeocodeLogGroupSubscription:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !Sub
-        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
-        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
-      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
-      LogGroupName: !Ref GetReverseGeocodeLogGroup
-
   PatchItemFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -551,9 +453,8 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref SessionTable
-          GOOGLE_API_KEY: !Ref GoogleApiKey
-          GOOGLE_IMAGE_MAX_HEIGHT: 300
-          GOOGLE_IMAGE_MAX_WIDTH: 400
+          MAPS_API_KEY: !Ref MapsApiKey
+          MAPS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, mapsApiUrl]
       Events:
         ApiKey:
           Type: Api
@@ -609,11 +510,10 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref SessionTable
-          GOOGLE_API_KEY: !Ref GoogleApiKey
-          GOOGLE_IMAGE_MAX_HEIGHT: 300
-          GOOGLE_IMAGE_MAX_WIDTH: 400
           ID_MIN_LENGTH: 3
           ID_MAX_LENGTH: 4
+          MAPS_API_KEY: !Ref MapsApiKey
+          MAPS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, mapsApiUrl]
           SESSION_EXPIRE_HOURS: 24
       Events:
         ApiKey:

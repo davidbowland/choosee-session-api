@@ -1,19 +1,18 @@
 import { mocked } from 'jest-mock'
 
-import * as googleMaps from '@services/google-maps'
-import { place, placeDetailsResponse, placeResult, session } from '../__mocks__'
-import { PlaceDetailsResponse } from '@types'
+import * as maps from '@services/maps'
+import { choice, place, placeDetailsResponse, session } from '../__mocks__'
+import { PlaceDetailsResponseData } from '@types'
 import { updateSessionStatus } from '@utils/session'
 
-jest.mock('@services/google-maps')
+jest.mock('@services/maps')
 jest.mock('@utils/logging')
 
 describe('sessions', () => {
   beforeAll(() => {
-    mocked(googleMaps).fetchPlaceDetails.mockResolvedValue({
-      data: placeDetailsResponse,
-    } as unknown as PlaceDetailsResponse)
-    mocked(googleMaps).fetchPlaceResults.mockResolvedValue(placeResult)
+    mocked(maps).advanceRounds.mockResolvedValue(choice)
+    mocked(maps).fetchChoices.mockResolvedValue([place])
+    mocked(maps).fetchPlaceDetails.mockResolvedValue(placeDetailsResponse)
   })
 
   describe('updateSessionStatus', () => {
@@ -61,7 +60,7 @@ describe('sessions', () => {
 
     describe('winner', () => {
       test('expect status changed to winner when decisions match', async () => {
-        mocked(googleMaps).fetchPlaceDetails.mockRejectedValueOnce(undefined)
+        mocked(maps).fetchPlaceDetails.mockRejectedValueOnce(undefined)
         const decisionMatchSession = {
           ...session,
           decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
@@ -82,9 +81,9 @@ describe('sessions', () => {
       })
 
       test('expect status changed to winner enhanced with details minus open hours', async () => {
-        mocked(googleMaps).fetchPlaceDetails.mockResolvedValueOnce({
-          data: { result: { ...placeDetailsResponse.result, opening_hours: undefined } },
-        } as unknown as PlaceDetailsResponse)
+        mocked(maps).fetchPlaceDetails.mockResolvedValueOnce({
+          result: { ...placeDetailsResponse.result, opening_hours: undefined },
+        } as unknown as PlaceDetailsResponseData)
         const decisionMatchSession = {
           ...session,
           decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
@@ -135,30 +134,13 @@ describe('sessions', () => {
 
     describe('finished', () => {
       test('expect status to be finished when no more results', async () => {
-        mocked(googleMaps).fetchPlaceResults.mockResolvedValueOnce({ ...placeResult, data: [] })
+        mocked(maps).advanceRounds.mockResolvedValue({ ...choice, choices: [] })
         const decisionNoMatchSession = {
           ...session,
           decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: false } },
         }
         const result = await updateSessionStatus(decisionNoMatchSession)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
-        expect(mocked(googleMaps).fetchPlaceResults).toHaveBeenCalledWith(
-          { lat: 38.9517053, lng: -92.3340724 },
-          'restaurant',
-          true,
-          1,
-          session.nextPageToken
-        )
-      })
-
-      test('expect status to be finished when no more pages', async () => {
-        const noNextPageSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: false } },
-          nextPageToken: undefined,
-        }
-        const result = await updateSessionStatus(noNextPageSession)
-        expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 0 } }))
       })
     })
   })
