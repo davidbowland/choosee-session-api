@@ -1,5 +1,5 @@
 import { idMaxLength, idMinLength } from '../config'
-import { getDataById } from '../services/dynamodb'
+import { getSessionById } from '../services/dynamodb'
 
 // Don't allow vowells, digits that look like vowells, or ambiguous characters
 const allowedCharacters = '256789bcdfghjmnpqrstvwxz'
@@ -11,7 +11,7 @@ const valueToId = (value: number): string => {
 
 const idExists = async (sessionId: string): Promise<boolean> => {
   try {
-    await getDataById(sessionId)
+    await getSessionById(sessionId)
     return true
   } catch (error) {
     return false

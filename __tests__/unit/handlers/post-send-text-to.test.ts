@@ -17,7 +17,6 @@ describe('post-send-text-to', () => {
 
   beforeAll(() => {
     mocked(events).extractJwtFromEvent.mockReturnValue(decodedJwt)
-    mocked(queue).sendSms.mockResolvedValue(undefined)
   })
 
   describe('postSendTextToHandler', () => {

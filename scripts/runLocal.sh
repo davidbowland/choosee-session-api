@@ -16,7 +16,8 @@ sam build --template ${SAM_TEMPLATE}
 
 # Start the API locally
 export CORS_DOMAIN='http://choosee.bowland.link'
-export DYNAMODB_TABLE_NAME=choosee-session-api-test
+export DYNAMODB_DECISION_TABLE_NAME=choosee-session-decision-test
+export DYNAMODB_SESSION_TABLE_NAME=choosee-session-api-test
 export ID_MIN_LENGTH=3
 export ID_MAX_LENGTH=4
 export MAPS_API_KEY=$(aws apigateway get-api-key --api-key 7lzyy1kkbj --include-value --region us-east-2 | jq -r .value)

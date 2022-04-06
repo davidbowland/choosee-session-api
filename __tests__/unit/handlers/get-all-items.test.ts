@@ -14,12 +14,12 @@ describe('get-all-items', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).scanData.mockResolvedValue([{ data: session, id: sessionId }])
+    mocked(dynamodb).scanSessions.mockResolvedValue([{ data: session, id: sessionId }])
   })
 
   describe('getAllItemsHandler', () => {
-    test('expect INTERNAL_SERVER_ERROR on scanData reject', async () => {
-      mocked(dynamodb).scanData.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on scanSessions reject', async () => {
+      mocked(dynamodb).scanSessions.mockRejectedValueOnce(undefined)
       const result = await getAllItemsHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })

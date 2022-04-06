@@ -1,12 +1,12 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { log, logError } from '../utils/logging'
-import { scanData } from '../services/dynamodb'
+import { scanSessions } from '../services/dynamodb'
 import status from '../utils/status'
 
 export const getAllItemsHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', event)
   try {
-    const data = await scanData()
+    const data = await scanSessions()
     return { ...status.OK, body: JSON.stringify(data) }
   } catch (error) {
     logError(error)

@@ -11,7 +11,8 @@ export const userPoolId = process.env.USER_POOL_ID as string
 
 // DynamoDB
 
-export const dynamodbTableName = process.env.DYNAMODB_TABLE_NAME as string
+export const dynamodbDecisionTableName = process.env.DYNAMODB_DECISION_TABLE_NAME as string
+export const dynamodbSessionTableName = process.env.DYNAMODB_SESSION_TABLE_NAME as string
 
 // JsonPatch
 

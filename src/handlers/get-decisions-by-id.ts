@@ -1,17 +1,8 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { extractJwtFromEvent } from '../utils/events'
-import { getDataById } from '../services/dynamodb'
+import { getDecisionById } from '../services/dynamodb'
 import { log } from '../utils/logging'
 import status from '../utils/status'
-
-const fetchById = async (sessionId: string, userId: string): Promise<APIGatewayProxyResultV2<any>> => {
-  try {
-    const data = await getDataById(sessionId)
-    return { ...status.OK, body: JSON.stringify(data.decisions[userId] ?? {}) }
-  } catch (error) {
-    return status.NOT_FOUND
-  }
-}
 
 export const getDecisionsByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
@@ -27,6 +18,6 @@ export const getDecisionsByIdHandler = async (event: APIGatewayProxyEventV2): Pr
     log('No JWT found with request')
   }
 
-  const result = await fetchById(sessionId, userId)
-  return result
+  const result = await getDecisionById(sessionId, userId)
+  return { ...status.OK, body: JSON.stringify(result) }
 }

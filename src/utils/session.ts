@@ -1,5 +1,6 @@
 import { DecisionObject, Place, PlaceDetails, Session } from '../types'
 import { advanceRounds, fetchChoices, fetchPlaceDetails } from '../services/maps'
+import { getDecisionById, queryUserIdsBySessionId } from '../services/dynamodb'
 import { logError } from './logging'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
@@ -32,9 +33,10 @@ const enhanceWithDetails = async (place: Place): Promise<PlaceDetails> => {
   return place
 }
 
-export const updateSessionStatus = async (session: Session): Promise<Session> => {
+export const updateSessionStatus = async (sessionId: string, session: Session): Promise<Session> => {
+  const decisionIds = await queryUserIdsBySessionId(sessionId)
   if (
-    Object.keys(session.decisions).length < session.voterCount ||
+    decisionIds.length < session.voterCount ||
     session.status.current === 'winner' ||
     session.status.current === 'finished'
   ) {
@@ -43,7 +45,9 @@ export const updateSessionStatus = async (session: Session): Promise<Session> =>
 
   const sessionChoices = await fetchChoices(session.choiceId)
   const choiceNames = sessionChoices.map((value) => value.name)
-  const allDecisions = Object.values(session.decisions)
+  const allDecisions = await Promise.all(
+    decisionIds.map((userId) => getDecisionById(sessionId, userId).then((decision) => decision.decisions))
+  )
   const allDecisionsComplete = allDecisions.every((decisions) => areDecisionsComplete(choiceNames, decisions))
   if (!allDecisionsComplete) {
     return session

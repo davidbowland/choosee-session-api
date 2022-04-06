@@ -3,7 +3,7 @@ import { log, logError } from '../utils/logging'
 import { createChoices } from '../services/maps'
 import { extractNewSessionFromEvent } from '../utils/events'
 import { getNextId } from '../utils/id-generator'
-import { setDataById } from '../services/dynamodb'
+import { setSessionById } from '../services/dynamodb'
 import status from '../utils/status'
 
 const createNewSession = async (newSession: NewSession): Promise<APIGatewayProxyResultV2<any>> => {
@@ -21,7 +21,6 @@ const createNewSession = async (newSession: NewSession): Promise<APIGatewayProxy
       const session: Session = {
         address: choice.address,
         choiceId: choice.choiceId,
-        decisions: {},
         expiration: newSession.expiration,
         lastAccessed: 0,
         location: choice.latLng,
@@ -35,7 +34,7 @@ const createNewSession = async (newSession: NewSession): Promise<APIGatewayProxy
         voterCount: newSession.voterCount,
       }
       log('Creating session', { session, sessionId })
-      await setDataById(sessionId, session)
+      await setSessionById(sessionId, session)
 
       return {
         ...status.CREATED,

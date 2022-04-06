@@ -1,5 +1,5 @@
 {
-  "body": "[{\"op\":\"replace\",\"path\":\"/Shakespeare's Pizza - Downtown\",\"value\":false}]",
+  "body": "[{\"op\":\"replace\",\"path\":\"/decisions/Shakespeare's Pizza - Downtown\",\"value\":false}]",
   "pathParameters": {
     "sessionId": "abc123",
     "userId": "+15551234567"

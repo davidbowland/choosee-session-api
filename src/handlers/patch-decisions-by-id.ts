@@ -1,54 +1,39 @@
 import { applyPatch } from 'fast-json-patch'
 
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Session } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation } from '../types'
 import { extractJsonPatchFromEvent, extractJwtFromEvent } from '../utils/events'
-import { getDataById, setDataById } from '../services/dynamodb'
+import { getDecisionById, getSessionById, setDecisionById, setSessionById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import status from '../utils/status'
 import { updateSessionStatus } from '../utils/session'
 
 const applyJsonPatch = async (
-  session: Session,
   sessionId: string,
   userId: string,
   patchOperations: PatchOperation[]
 ): Promise<APIGatewayProxyResultV2<any>> => {
-  const decisions = session.decisions[userId] || {}
-  const updatedDecisions = applyPatch(
-    decisions,
+  const decision = await getDecisionById(sessionId, userId)
+  const updatedDecision = applyPatch(
+    decision,
     patchOperations,
     throwOnInvalidJsonPatch,
     mutateObjectOnJsonPatch
   ).newDocument
+
   try {
-    const updatedSession = await updateSessionStatus({
-      ...session,
-      decisions: { ...session.decisions, [userId]: updatedDecisions },
-    })
-    log('Updated session', { prevSession: session, sessionId, updatedDecisions, updatedSession })
-    await setDataById(sessionId, updatedSession)
-    return { ...status.OK, body: JSON.stringify(updatedDecisions) }
+    log('Updated decision', { prevDecision: decision, sessionId, updatedDecision, userId })
+    await setDecisionById(sessionId, userId, updatedDecision)
+
+    const session = await getSessionById(sessionId)
+    const updatedSession = await updateSessionStatus(sessionId, session)
+    log('Updated session', { prevSession: session, sessionId, updatedSession })
+    await setSessionById(sessionId, updatedSession)
+
+    return { ...status.OK, body: JSON.stringify(updatedDecision) }
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR
-  }
-}
-
-const patchById = async (
-  sessionId: string,
-  userId: string,
-  patchOperations: PatchOperation[]
-): Promise<APIGatewayProxyResultV2<any>> => {
-  try {
-    const session = await getDataById(sessionId)
-    try {
-      return await applyJsonPatch(session, sessionId, userId, patchOperations)
-    } catch (error) {
-      return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
-    }
-  } catch {
-    return status.NOT_FOUND
   }
 }
 
@@ -70,7 +55,7 @@ export const patchDecisionByIdHandler = async (
     }
 
     const patchOperations = extractJsonPatchFromEvent(event)
-    const result = await patchById(sessionId, userId, patchOperations)
+    const result = await applyJsonPatch(sessionId, userId, patchOperations)
     return result
   } catch (error) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }

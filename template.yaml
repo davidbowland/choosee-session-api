@@ -26,6 +26,7 @@ Mappings:
       certificateEdge: adce1a21-90b4-4120-8548-111215e582f0
       certificateRegional: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://choosee.dbowland.com
+      decisionTable: choosee-session-decision
       domain: choosee-session-api.dbowland.com
       domainInternal: choosee-session-api-internal.dbowland.com
       logStreamFunction: log-subscriber
@@ -40,6 +41,7 @@ Mappings:
       certificateEdge: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       certificateRegional: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://choosee.bowland.link
+      decisionTable: choosee-session-decision-test
       domain: choosee-session-api.bowland.link
       domainInternal: choosee-session-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
@@ -146,7 +148,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
           Type: Api
@@ -193,7 +195,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
           Type: Api
@@ -240,7 +242,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
           Type: Api
@@ -292,10 +294,10 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref SessionTable
+            TableName: !Ref DecisionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_DECISION_TABLE_NAME: !Ref DecisionTable
       Events:
         ApiKey:
           Type: Api
@@ -350,7 +352,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
           Type: Api
@@ -394,10 +396,13 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
+            TableName: !Ref DecisionTable
+        - DynamoDBCrudPolicy:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_DECISION_TABLE_NAME: !Ref DecisionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
           MAPS_API_KEY: !Ref MapsApiKey
           MAPS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, mapsApiUrl]
       Events:
@@ -454,7 +459,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
           ID_MIN_LENGTH: 3
           ID_MAX_LENGTH: 4
           MAPS_API_KEY: !Ref MapsApiKey
@@ -514,7 +519,7 @@ Resources:
             TableName: !Ref SessionTable
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref SessionTable
+          DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
           Type: Api
@@ -641,6 +646,27 @@ Resources:
       LogGroupName: !Ref PostSendTextToLogGroup
 
   # DynamoDB
+
+  DecisionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: SessionId
+          AttributeType: S
+        - AttributeName: UserId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: SessionId
+          KeyType: HASH
+        - AttributeName: UserId
+          KeyType: RANGE
+      TableName: !FindInMap [EnvironmentMap, !Ref Environment, decisionTable]
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
 
   SessionTable:
     Type: AWS::DynamoDB::Table

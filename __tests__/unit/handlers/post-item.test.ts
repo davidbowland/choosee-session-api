@@ -21,8 +21,6 @@ describe('post-item', () => {
 
   beforeAll(() => {
     mocked(maps).createChoices.mockResolvedValue(choice)
-    mocked(dynamodb).getDataById.mockRejectedValue(undefined)
-    mocked(dynamodb).setDataById.mockResolvedValue(undefined)
     mocked(events).extractJwtFromEvent.mockReturnValue(decodedJwt)
     mocked(events).extractNewSessionFromEvent.mockReturnValue(newSession)
     mocked(idGenerator).getNextId.mockResolvedValue(sessionId)
@@ -47,13 +45,13 @@ describe('post-item', () => {
       )
     })
 
-    test('expect sessionId passed to setDataById', async () => {
+    test('expect sessionId passed to setSessionById', async () => {
       await postItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('abc123', expect.objectContaining(newSession))
+      expect(mocked(dynamodb).setSessionById).toHaveBeenCalledWith('abc123', expect.objectContaining(newSession))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
-      mocked(dynamodb).setDataById.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on setSessionById reject', async () => {
+      mocked(dynamodb).setSessionById.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })

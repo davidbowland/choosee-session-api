@@ -14,12 +14,12 @@ describe('get-by-id', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).getDataById.mockResolvedValue(session)
+    mocked(dynamodb).getSessionById.mockResolvedValue(session)
   })
 
   describe('getByIdHandler', () => {
-    test('expect NOT_FOUND on getDataById reject', async () => {
-      mocked(dynamodb).getDataById.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND on getSessionById reject', async () => {
+      mocked(dynamodb).getSessionById.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })

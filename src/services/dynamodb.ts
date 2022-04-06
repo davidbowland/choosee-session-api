@@ -1,13 +1,28 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { Session, SessionBatch } from '../types'
-import { dynamodbTableName } from '../config'
+import { Decision, Session, SessionBatch } from '../types'
+import { dynamodbDecisionTableName, dynamodbSessionTableName } from '../config'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
 /* Delete item */
 
-export const deleteDataById = (sessionId: string): Promise<DynamoDB.Types.DeleteItemOutput> =>
+export const deleteDecisionById = (sessionId: string, userId: string): Promise<DynamoDB.Types.DeleteItemOutput> =>
+  dynamodb
+    .deleteItem({
+      Key: {
+        SessionId: {
+          S: `${sessionId}`,
+        },
+        UserId: {
+          S: `${userId}`,
+        },
+      },
+      TableName: dynamodbDecisionTableName,
+    })
+    .promise()
+
+export const deleteSessionById = (sessionId: string): Promise<DynamoDB.Types.DeleteItemOutput> =>
   dynamodb
     .deleteItem({
       Key: {
@@ -15,13 +30,31 @@ export const deleteDataById = (sessionId: string): Promise<DynamoDB.Types.Delete
           S: `${sessionId}`,
         },
       },
-      TableName: dynamodbTableName,
+      TableName: dynamodbSessionTableName,
     })
     .promise()
 
 /* Get single item */
 
-export const getDataById = (sessionId: string): Promise<Session> =>
+export const getDecisionById = (sessionId: string, userId: string): Promise<Decision> =>
+  dynamodb
+    .getItem({
+      Key: {
+        SessionId: {
+          S: `${sessionId}`,
+        },
+        UserId: {
+          S: `${userId}`,
+        },
+      },
+      TableName: dynamodbDecisionTableName,
+    })
+    .promise()
+    .then((response) => response.Item.Data.S)
+    .then(JSON.parse)
+    .catch(() => ({ decisions: [] }))
+
+export const getSessionById = (sessionId: string): Promise<Session> =>
   dynamodb
     .getItem({
       Key: {
@@ -29,29 +62,32 @@ export const getDataById = (sessionId: string): Promise<Session> =>
           S: `${sessionId}`,
         },
       },
-      TableName: dynamodbTableName,
+      TableName: dynamodbSessionTableName,
     })
     .promise()
     .then((response) => response.Item.Data.S)
     .then(JSON.parse)
 
-/* Scan for all items */
+/* Query for user IDs by session */
 
-const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): SessionBatch[] =>
-  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.SessionId.S }))
-
-export const scanData = (): Promise<SessionBatch[]> =>
+export const queryUserIdsBySessionId = (sessionId: string): Promise<string[]> =>
   dynamodb
-    .scan({
-      AttributesToGet: ['Data', 'SessionId', 'Expiration'],
-      TableName: dynamodbTableName,
+    .query({
+      ExpressionAttributeValues: {
+        ':v1': {
+          S: sessionId,
+        },
+      },
+      KeyConditionExpression: 'SessionId = :v1',
+      ProjectionExpression: 'UserId',
+      TableName: dynamodbDecisionTableName,
     })
     .promise()
-    .then((response) => getItemsFromScan(response))
+    .then((response) => response.Items.map((item) => item.UserId.S))
 
 /* Scan for expired items */
 
-export const scanExpiredIds = (): Promise<any> =>
+export const scanExpiredSessionIds = (): Promise<string[]> =>
   dynamodb
     .scan({
       ExpressionAttributeValues: {
@@ -64,14 +100,50 @@ export const scanExpiredIds = (): Promise<any> =>
       },
       FilterExpression: 'Expiration BETWEEN :v1 AND :v2',
       IndexName: 'ExpirationIndex',
-      TableName: dynamodbTableName,
+      TableName: dynamodbSessionTableName,
     })
     .promise()
     .then((response) => response.Items.map((item) => item.SessionId.S))
 
+/* Scan for all items */
+
+const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): SessionBatch[] =>
+  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.SessionId.S }))
+
+export const scanSessions = (): Promise<SessionBatch[]> =>
+  dynamodb
+    .scan({
+      AttributesToGet: ['Data', 'SessionId', 'Expiration'],
+      TableName: dynamodbSessionTableName,
+    })
+    .promise()
+    .then((response) => getItemsFromScan(response))
+
 /* Set item */
 
-export const setDataById = (sessionId: string, data: Session): Promise<DynamoDB.Types.PutItemOutput> =>
+export const setDecisionById = (
+  sessionId: string,
+  userId: string,
+  data: Decision
+): Promise<DynamoDB.Types.PutItemOutput> =>
+  dynamodb
+    .putItem({
+      Item: {
+        Data: {
+          S: JSON.stringify(data),
+        },
+        SessionId: {
+          S: `${sessionId}`,
+        },
+        UserId: {
+          S: `${userId}`,
+        },
+      },
+      TableName: dynamodbDecisionTableName,
+    })
+    .promise()
+
+export const setSessionById = (sessionId: string, data: Session): Promise<DynamoDB.Types.PutItemOutput> =>
   dynamodb
     .putItem({
       Item: {
@@ -85,6 +157,6 @@ export const setDataById = (sessionId: string, data: Session): Promise<DynamoDB.
           S: `${sessionId}`,
         },
       },
-      TableName: dynamodbTableName,
+      TableName: dynamodbSessionTableName,
     })
     .promise()

@@ -1,4 +1,13 @@
-import { Choice, NewChoice, NewSession, PatchOperation, Place, PlaceDetailsResponseData, Session } from '@types'
+import {
+  Choice,
+  Decision,
+  NewChoice,
+  NewSession,
+  PatchOperation,
+  Place,
+  PlaceDetailsResponseData,
+  Session,
+} from '@types'
 
 export const choiceId = '123abc'
 
@@ -41,6 +50,10 @@ export const place: Place = {
   vicinity: 'Columbia',
 }
 
+export const decision: Decision = {
+  decisions: { "Shakespeare's Pizza - Downtown": true },
+}
+
 export const newSession: NewSession = {
   address: 'Columbia, MO 65203, USA',
   type: 'restaurant',
@@ -50,7 +63,6 @@ export const newSession: NewSession = {
 export const session: Session = {
   address: 'Columbia, MO 65203, USA',
   choiceId,
-  decisions: { '+15551234567': { "Shakespeare's Pizza - Downtown": true } },
   expiration: 1649131360051,
   lastAccessed: 123456789,
   location: {
@@ -74,9 +86,11 @@ export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/a
 export const jwt =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NDY0NTM0MDgsImV4cCI6MTY3Nzk4OTQwOCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsInBob25lX251bWJlciI6IisxNTU1MTIzNDU2NyIsIm5hbWUiOiJEYXZlIn0.cGg6zUrwlpzMIaczADmZLJgNDXMBPR2Gdixx_XlDr9Y'
 
+export const userId = '+15551234567'
+
 export const decodedJwt = {
   name: 'Dave',
-  phone_number: '+15551234567',
+  phone_number: userId,
 }
 
 export const placeDetailsResponse: PlaceDetailsResponseData = {

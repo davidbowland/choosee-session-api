@@ -1,13 +1,13 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
-import { deleteDataById, getDataById } from '../services/dynamodb'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Session } from '../types'
+import { deleteSessionById, getSessionById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const fetchDataThenDelete = async (sessionId: string): Promise<APIGatewayProxyResultV2<any>> => {
+const fetchDataThenDelete = async (sessionId: string): Promise<APIGatewayProxyResultV2<Session>> => {
   try {
-    const data = await getDataById(sessionId)
+    const data = await getSessionById(sessionId)
     try {
-      await deleteDataById(sessionId)
+      await deleteSessionById(sessionId)
       return { ...status.OK, body: JSON.stringify(data) }
     } catch (error) {
       logError(error)
@@ -18,7 +18,7 @@ const fetchDataThenDelete = async (sessionId: string): Promise<APIGatewayProxyRe
   }
 }
 
-export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
+export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<Session>> => {
   log('Received event', { ...event, body: undefined })
   const sessionId = event.pathParameters.sessionId
   const result = await fetchDataThenDelete(sessionId)

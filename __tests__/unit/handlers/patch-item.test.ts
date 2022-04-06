@@ -17,8 +17,7 @@ describe('patch-item', () => {
   const expectedResult = { ...session, address: '90036' } as Session
 
   beforeAll(() => {
-    mocked(dynamodb).getDataById.mockResolvedValue(session)
-    mocked(dynamodb).setDataById.mockResolvedValue(undefined)
+    mocked(dynamodb).getSessionById.mockResolvedValue(session)
     mocked(events).extractJsonPatchFromEvent.mockImplementation((event) => JSON.parse(event.body))
   })
 
@@ -45,21 +44,21 @@ describe('patch-item', () => {
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })
 
-    test('expect NOT_FOUND on getDataById reject', async () => {
-      mocked(dynamodb).getDataById.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND on getSessionById reject', async () => {
+      mocked(dynamodb).getSessionById.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on setDataById reject', async () => {
-      mocked(dynamodb).setDataById.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on setSessionById reject', async () => {
+      mocked(dynamodb).setSessionById.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
-    test('expect setDataByIndex called with updated object', async () => {
+    test('expect setSessionById called with updated object', async () => {
       await patchItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith(sessionId, expectedResult)
+      expect(mocked(dynamodb).setSessionById).toHaveBeenCalledWith(sessionId, expectedResult)
     })
 
     test('expect OK and body', async () => {

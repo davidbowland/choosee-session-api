@@ -4,7 +4,8 @@ process.env.USER_POOL_ID = 'us-east-2_8765redfghuyt'
 
 // DynamoDB
 
-process.env.DYNAMODB_TABLE_NAME = 'choosee-table'
+process.env.DYNAMODB_DECISION_TABLE_NAME = 'decision-table'
+process.env.DYNAMODB_SESSION_TABLE_NAME = 'session-table'
 
 // Google
 

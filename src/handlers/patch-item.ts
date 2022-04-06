@@ -1,7 +1,7 @@
 import { applyPatch } from 'fast-json-patch'
 
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Session } from '../types'
-import { getDataById, setDataById } from '../services/dynamodb'
+import { getSessionById, setSessionById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import { extractJsonPatchFromEvent } from '../utils/events'
@@ -19,7 +19,7 @@ const applyJsonPatch = async (
     mutateObjectOnJsonPatch
   ).newDocument
   try {
-    await setDataById(sessionId, updatedSession)
+    await setSessionById(sessionId, updatedSession)
     return { ...status.OK, body: JSON.stringify(updatedSession) }
   } catch (error) {
     logError(error)
@@ -32,7 +32,7 @@ const patchById = async (
   patchOperations: PatchOperation[]
 ): Promise<APIGatewayProxyResultV2<any>> => {
   try {
-    const session = await getDataById(sessionId)
+    const session = await getSessionById(sessionId)
     try {
       return await applyJsonPatch(session, sessionId, patchOperations)
     } catch (error) {

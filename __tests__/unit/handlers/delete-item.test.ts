@@ -13,24 +13,23 @@ describe('delete-item', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).deleteDataById.mockResolvedValue(undefined)
-    mocked(dynamodb).getDataById.mockResolvedValue(session)
+    mocked(dynamodb).getSessionById.mockResolvedValue(session)
   })
 
   describe('deleteByIdHandler', () => {
     test('expect deleteDataById called when getDataById resolves', async () => {
       await deleteByIdHandler(event)
-      expect(mocked(dynamodb).deleteDataById).toHaveBeenCalledWith(sessionId)
+      expect(mocked(dynamodb).deleteSessionById).toHaveBeenCalledWith(sessionId)
     })
 
     test('expect deleteDataById not to be called when getDataById rejects', async () => {
-      mocked(dynamodb).getDataById.mockRejectedValueOnce(undefined)
+      mocked(dynamodb).getSessionById.mockRejectedValueOnce(undefined)
       await deleteByIdHandler(event)
-      expect(mocked(dynamodb).deleteDataById).toHaveBeenCalledTimes(0)
+      expect(mocked(dynamodb).deleteSessionById).toHaveBeenCalledTimes(0)
     })
 
     test('expect INTERNAL_SERVER_ERROR on deleteDataById reject', async () => {
-      mocked(dynamodb).deleteDataById.mockRejectedValueOnce(undefined)
+      mocked(dynamodb).deleteSessionById.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
@@ -41,7 +40,7 @@ describe('delete-item', () => {
     })
 
     test('expect NO_CONTENT when index does not exist', async () => {
-      mocked(dynamodb).getDataById.mockRejectedValueOnce(undefined)
+      mocked(dynamodb).getSessionById.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.NO_CONTENT))
     })

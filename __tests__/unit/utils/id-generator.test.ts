@@ -20,7 +20,7 @@ describe('id-generator', () => {
 
   describe('getNextId', () => {
     beforeAll(() => {
-      mocked(dynamodb).getDataById.mockRejectedValue(undefined)
+      mocked(dynamodb).getSessionById.mockRejectedValue(undefined)
     })
 
     test('expect id returned passed to setDataById', async () => {
@@ -29,7 +29,7 @@ describe('id-generator', () => {
     })
 
     test('expect second sessionId when first exists', async () => {
-      mocked(dynamodb).getDataById.mockResolvedValueOnce(session)
+      mocked(dynamodb).getSessionById.mockResolvedValueOnce(session)
       mockRandom.mockReturnValueOnce(0.5)
       mockRandom.mockReturnValueOnce(0.25)
       const result = await getNextId()

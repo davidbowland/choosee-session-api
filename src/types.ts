@@ -27,6 +27,10 @@ export interface DecisionObject {
   [key: string]: boolean
 }
 
+export interface Decision {
+  decisions: DecisionObject
+}
+
 export interface StatusObject {
   current: 'deciding' | 'winner' | 'finished'
   pageId: number
@@ -36,9 +40,6 @@ export interface StatusObject {
 export interface Session {
   address: string
   choiceId: string
-  decisions: {
-    [key: string]: DecisionObject
-  }
   expiration: number
   lastAccessed: number
   location: LatLng

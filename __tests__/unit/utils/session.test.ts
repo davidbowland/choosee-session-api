@@ -1,15 +1,19 @@
 import { mocked } from 'jest-mock'
 
+import * as dynamodb from '@services/dynamodb'
 import * as maps from '@services/maps'
-import { choice, place, placeDetailsResponse, session } from '../__mocks__'
+import { choice, place, placeDetailsResponse, session, sessionId, userId } from '../__mocks__'
 import { PlaceDetailsResponseData } from '@types'
 import { updateSessionStatus } from '@utils/session'
 
+jest.mock('@services/dynamodb')
 jest.mock('@services/maps')
 jest.mock('@utils/logging')
 
 describe('sessions', () => {
   beforeAll(() => {
+    mocked(dynamodb).getDecisionById.mockResolvedValue({ decisions: { Columbia: true } })
+    mocked(dynamodb).queryUserIdsBySessionId.mockResolvedValue(['+15551234567', '+15551234568'])
     mocked(maps).advanceRounds.mockResolvedValue(choice)
     mocked(maps).fetchChoices.mockResolvedValue([place])
     mocked(maps).fetchPlaceDetails.mockResolvedValue(placeDetailsResponse)
@@ -34,47 +38,36 @@ describe('sessions', () => {
     }
 
     describe('unchanged', () => {
-      test('expect status unchanged for typical session', async () => {
-        const result = await updateSessionStatus(session)
+      test('expect status unchanged when no users', async () => {
+        mocked(dynamodb).queryUserIdsBySessionId.mockResolvedValueOnce([])
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(session)
       })
 
       test('expect status unchanged when only one voter', async () => {
-        const decisionOneVoterSession = {
-          ...session,
-          decisions: { '+15551234568': { Columbia: true } },
-        }
-        const result = await updateSessionStatus(decisionOneVoterSession)
-        expect(result).toEqual(decisionOneVoterSession)
+        mocked(dynamodb).queryUserIdsBySessionId.mockResolvedValueOnce([userId])
+        const result = await updateSessionStatus(sessionId, session)
+        expect(result).toEqual(session)
       })
 
       test('expect status unchanged when one decision matches', async () => {
-        const decisionNoMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { "Shakespeare's Pizza - Downtown": true }, '+15551234568': { Columbia: true } },
-        }
-        const result = await updateSessionStatus(decisionNoMatchSession)
-        expect(result).toEqual(decisionNoMatchSession)
+        mocked(dynamodb).getDecisionById.mockResolvedValueOnce({
+          decisions: { "Shakespeare's Pizza - Downtown": true },
+        })
+        const result = await updateSessionStatus(sessionId, session)
+        expect(result).toEqual(session)
       })
     })
 
     describe('winner', () => {
       test('expect status changed to winner when decisions match', async () => {
         mocked(maps).fetchPlaceDetails.mockRejectedValueOnce(undefined)
-        const decisionMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
-        }
-        const result = await updateSessionStatus(decisionMatchSession)
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: place } }))
       })
 
       test('expect status changed to winner enhanced with details', async () => {
-        const decisionMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
-        }
-        const result = await updateSessionStatus(decisionMatchSession)
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(
           expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
         )
@@ -84,11 +77,7 @@ describe('sessions', () => {
         mocked(maps).fetchPlaceDetails.mockResolvedValueOnce({
           result: { ...placeDetailsResponse.result, opening_hours: undefined },
         } as unknown as PlaceDetailsResponseData)
-        const decisionMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: true } },
-        }
-        const result = await updateSessionStatus(decisionMatchSession)
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(
           expect.objectContaining({
             status: { current: 'winner', pageId: 0, winner: { ...winningPlace, openHours: undefined } },
@@ -97,12 +86,12 @@ describe('sessions', () => {
       })
 
       test('expect status changed to winner when voter count hit', async () => {
+        mocked(dynamodb).queryUserIdsBySessionId.mockResolvedValueOnce([userId])
         const decisionMatchSession = {
           ...session,
-          decisions: { '+15551234567': { Columbia: true } },
           voterCount: 1,
         }
-        const result = await updateSessionStatus(decisionMatchSession)
+        const result = await updateSessionStatus(sessionId, decisionMatchSession)
         expect(result).toEqual(
           expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
         )
@@ -112,22 +101,18 @@ describe('sessions', () => {
         const newPlace = { ...place, name: 'Bobs Burgers' }
         const decisionMatchSession = {
           ...session,
-          decisions: { '+15551234567': { Columbia: true } },
           status: { current: 'winner' as any, pageId: 0, winner: newPlace },
           voterCount: 1,
         }
-        const result = await updateSessionStatus(decisionMatchSession)
+        const result = await updateSessionStatus(sessionId, decisionMatchSession)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: newPlace } }))
       })
     })
 
     describe('deciding', () => {
       test('expect pageId changed when no decision match', async () => {
-        const decisionNoMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: false } },
-        }
-        const result = await updateSessionStatus(decisionNoMatchSession)
+        mocked(dynamodb).getDecisionById.mockResolvedValueOnce({ decisions: { Columbia: false } })
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'deciding', pageId: 1 } }))
       })
     })
@@ -135,11 +120,8 @@ describe('sessions', () => {
     describe('finished', () => {
       test('expect status to be finished when no more results', async () => {
         mocked(maps).advanceRounds.mockResolvedValue({ ...choice, choices: [] })
-        const decisionNoMatchSession = {
-          ...session,
-          decisions: { '+15551234567': { Columbia: true }, '+15551234568': { Columbia: false } },
-        }
-        const result = await updateSessionStatus(decisionNoMatchSession)
+        mocked(dynamodb).getDecisionById.mockResolvedValueOnce({ decisions: { Columbia: false } })
+        const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
       })
     })

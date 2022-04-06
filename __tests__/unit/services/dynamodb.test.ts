@@ -1,77 +1,132 @@
-import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
-import { session, sessionId } from '../__mocks__'
+import { decision, session, sessionId, userId } from '../__mocks__'
+import {
+  deleteDecisionById,
+  deleteSessionById,
+  getDecisionById,
+  getSessionById,
+  queryUserIdsBySessionId,
+  scanExpiredSessionIds,
+  scanSessions,
+  setDecisionById,
+  setSessionById,
+} from '@services/dynamodb'
 
 const mockDeleteItem = jest.fn()
 const mockGetItem = jest.fn()
 const mockPutItem = jest.fn()
+const mockQueryTable = jest.fn()
 const mockScanTable = jest.fn()
 jest.mock('aws-sdk', () => ({
   DynamoDB: jest.fn(() => ({
     deleteItem: (...args) => ({ promise: () => mockDeleteItem(...args) }),
     getItem: (...args) => ({ promise: () => mockGetItem(...args) }),
     putItem: (...args) => ({ promise: () => mockPutItem(...args) }),
+    query: (...args) => ({ promise: () => mockQueryTable(...args) }),
     scan: (...args) => ({ promise: () => mockScanTable(...args) }),
   })),
 }))
 
 describe('dynamodb', () => {
-  describe('deleteDataById', () => {
+  describe('deleteDecisionById', () => {
     test('expect index passed to delete', async () => {
-      await deleteDataById(sessionId)
+      await deleteDecisionById(sessionId, userId)
+      expect(mockDeleteItem).toHaveBeenCalledWith({
+        Key: {
+          SessionId: {
+            S: `${sessionId}`,
+          },
+          UserId: {
+            S: `${userId}`,
+          },
+        },
+        TableName: 'decision-table',
+      })
+    })
+  })
+
+  describe('deleteSessionById', () => {
+    test('expect index passed to delete', async () => {
+      await deleteSessionById(sessionId)
       expect(mockDeleteItem).toHaveBeenCalledWith({
         Key: {
           SessionId: {
             S: `${sessionId}`,
           },
         },
-        TableName: 'choosee-table',
+        TableName: 'session-table',
       })
     })
   })
 
-  describe('getDataById', () => {
+  describe('getDecisionById', () => {
+    beforeAll(() => {
+      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(decision) } } })
+    })
+
+    test('expect id passed to get', async () => {
+      await getDecisionById(sessionId, userId)
+      expect(mockGetItem).toHaveBeenCalledWith({
+        Key: {
+          SessionId: {
+            S: `${sessionId}`,
+          },
+          UserId: {
+            S: `${userId}`,
+          },
+        },
+        TableName: 'decision-table',
+      })
+    })
+
+    test('expect data parsed and returned', async () => {
+      const result = await getDecisionById(sessionId, userId)
+      expect(result).toEqual(decision)
+    })
+  })
+
+  describe('getSessionById', () => {
     beforeAll(() => {
       mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(session) } } })
     })
 
     test('expect id passed to get', async () => {
-      await getDataById(sessionId)
+      await getSessionById(sessionId)
       expect(mockGetItem).toHaveBeenCalledWith({
         Key: {
           SessionId: {
             S: `${sessionId}`,
           },
         },
-        TableName: 'choosee-table',
+        TableName: 'session-table',
       })
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await getDataById(sessionId)
+      const result = await getSessionById(sessionId)
       expect(result).toEqual(session)
     })
   })
 
-  describe('scanData', () => {
+  describe('queryUserIdsBySessionId', () => {
     beforeAll(() => {
-      mockScanTable.mockResolvedValue({
-        Items: [{ Data: { S: JSON.stringify(session) }, SessionId: { S: `${sessionId}` } }],
+      mockQueryTable.mockResolvedValue({
+        Items: [{ UserId: { S: `${userId}` } }],
       })
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await scanData()
-      expect(result).toEqual([{ data: session, id: sessionId }])
+      const result = await queryUserIdsBySessionId(sessionId)
+      expect(result).toEqual([userId])
     })
 
     test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
-      const result = await scanData()
+      mockQueryTable.mockResolvedValueOnce({ Items: [] })
+      const result = await queryUserIdsBySessionId(sessionId)
       expect(result).toEqual([])
     })
   })
 
-  describe('scanExpiredIds', () => {
+  describe('scanExpiredSessionIds', () => {
     beforeAll(() => {
       mockScanTable.mockResolvedValue({
         Items: [{ SessionId: { S: `${sessionId}` } }],
@@ -79,20 +134,59 @@ describe('dynamodb', () => {
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await scanExpiredIds()
+      const result = await scanExpiredSessionIds()
       expect(result).toEqual([sessionId])
     })
 
     test('expect empty object with no data returned', async () => {
       mockScanTable.mockResolvedValueOnce({ Items: [] })
-      const result = await scanExpiredIds()
+      const result = await scanExpiredSessionIds()
       expect(result).toEqual([])
     })
   })
 
-  describe('setDataById', () => {
+  describe('scanSessions', () => {
+    beforeAll(() => {
+      mockScanTable.mockResolvedValue({
+        Items: [{ Data: { S: JSON.stringify(session) }, SessionId: { S: `${sessionId}` } }],
+      })
+    })
+
+    test('expect data parsed and returned', async () => {
+      const result = await scanSessions()
+      expect(result).toEqual([{ data: session, id: sessionId }])
+    })
+
+    test('expect empty object with no data returned', async () => {
+      mockScanTable.mockResolvedValueOnce({ Items: [] })
+      const result = await scanSessions()
+      expect(result).toEqual([])
+    })
+  })
+
+  describe('setDecisionById', () => {
     test('expect index and data passed to put', async () => {
-      await setDataById(sessionId, session)
+      await setDecisionById(sessionId, userId, decision)
+      expect(mockPutItem).toHaveBeenCalledWith({
+        Item: {
+          Data: {
+            S: JSON.stringify(decision),
+          },
+          SessionId: {
+            S: `${sessionId}`,
+          },
+          UserId: {
+            S: `${userId}`,
+          },
+        },
+        TableName: 'decision-table',
+      })
+    })
+  })
+
+  describe('setSessionById', () => {
+    test('expect index and data passed to put', async () => {
+      await setSessionById(sessionId, session)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
           Data: {
@@ -105,7 +199,7 @@ describe('dynamodb', () => {
             S: `${sessionId}`,
           },
         },
-        TableName: 'choosee-table',
+        TableName: 'session-table',
       })
     })
   })
