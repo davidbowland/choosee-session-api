@@ -516,9 +516,12 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
+            TableName: !Ref DecisionTable
+        - DynamoDBCrudPolicy:
             TableName: !Ref SessionTable
       Environment:
         Variables:
+          DYNAMODB_DECISION_TABLE_NAME: !Ref DecisionTable
           DYNAMODB_SESSION_TABLE_NAME: !Ref SessionTable
       Events:
         ApiKey:
