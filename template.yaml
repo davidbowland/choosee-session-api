@@ -362,6 +362,14 @@ Resources:
             Method: patch
             Auth:
               ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /sessions/{sessionId}
+            Method: patch
+            Auth:
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'

@@ -22,7 +22,6 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
         address: choice.address,
         choiceId: choice.choiceId,
         expiration: newSession.expiration,
-        lastAccessed: 0,
         location: choice.latLng,
         openNow: choice.openNow,
         owner,

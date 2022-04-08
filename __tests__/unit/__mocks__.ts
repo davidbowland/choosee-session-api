@@ -64,7 +64,6 @@ export const session: Session = {
   address: 'Columbia, MO 65203, USA',
   choiceId,
   expiration: 1649131360051,
-  lastAccessed: 123456789,
   location: {
     lat: 38.9538484,
     lng: -92.3714428,
@@ -81,7 +80,7 @@ export const session: Session = {
 
 export const sessionId = 'abc123'
 
-export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/address', value: '90036' }]
+export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/voterCount', value: 1 }]
 
 export const jwt =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NDY0NTM0MDgsImV4cCI6MTY3Nzk4OTQwOCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsInBob25lX251bWJlciI6IisxNTU1MTIzNDU2NyIsIm5hbWUiOiJEYXZlIn0.cGg6zUrwlpzMIaczADmZLJgNDXMBPR2Gdixx_XlDr9Y'

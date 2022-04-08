@@ -1,5 +1,5 @@
 {
-  "body": "[{\"op\":\"replace\",\"path\":\"/address\",\"value\":\"90036\"}]",
+  "body": "[{\"op\":\"replace\",\"path\":\"/voterCount\",\"value\":1}]",
   "pathParameters": {
     "sessionId": "abc123"
   },
@@ -8,5 +8,8 @@
       "method": "PATCH",
       "path": "/v1/sessions/abc123"
     }
+  },
+  "headers": {
+    "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvZ25pdG8taWRwLnVzLWVhc3QtMi5hbWF6b25hd3MuY29tL3VzLWVhc3QtMl9IVFFic3hYYWoiLCJpYXQiOjE2NDkzODkxNzMsImV4cCI6MTY4MDkyNTE3MywiYXVkIjoibGlua3MuZGJvd2xhbmQuY29tIiwic3ViIjoiZWZkMzFiNjctMTlmMi00ZDBhLWE3MjMtNzg1MDZmZmMwYjdlIiwicGhvbmVfbnVtYmVyIjoiKzE1NTUxMjM0NTY3IiwibmFtZSI6IkRhdmUiLCJjb2duaXRvOnVzZXJuYW1lIjoiZWZkMzFiNjctMTlmMi00ZDBhLWE3MjMtNzg1MDZmZmMwYjdlIiwicGhvbmVfbnVtYmVyX3ZlcmlmaWVkIjoidHJ1ZSIsInRva2VuX3VzZSI6ImlkIn0.xi3Lb4cjnOrVomyvdMgYm6KMVo55-U8QXXFGJxOoj-o"
   }
 }

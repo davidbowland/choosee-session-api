@@ -1,10 +1,10 @@
 import { applyPatch } from 'fast-json-patch'
 
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Session } from '../types'
+import { extractJsonPatchFromEvent, extractJwtFromEvent } from '../utils/events'
 import { getSessionById, setSessionById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
-import { extractJsonPatchFromEvent } from '../utils/events'
 import status from '../utils/status'
 
 const applyJsonPatch = async (
@@ -20,7 +20,7 @@ const applyJsonPatch = async (
   ).newDocument
   try {
     await setSessionById(sessionId, updatedSession)
-    return { ...status.OK, body: JSON.stringify(updatedSession) }
+    return { ...status.OK, body: JSON.stringify({ ...updatedSession, sessionId }) }
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR
@@ -29,10 +29,19 @@ const applyJsonPatch = async (
 
 const patchById = async (
   sessionId: string,
-  patchOperations: PatchOperation[]
+  patchOperations: PatchOperation[],
+  subject?: string
 ): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const session = await getSessionById(sessionId)
+    if (subject && session.owner !== subject) {
+      return status.FORBIDDEN
+    } else if (
+      subject &&
+      !patchOperations.every((value) => value.path === '/pagesPerRound' || value.path === '/voterCount')
+    ) {
+      return status.FORBIDDEN
+    }
     try {
       return await applyJsonPatch(session, sessionId, patchOperations)
     } catch (error) {
@@ -47,8 +56,10 @@ export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<A
   log('Received event', { ...event, body: undefined })
   try {
     const sessionId = event.pathParameters.sessionId
+    const jwtPayload = extractJwtFromEvent(event)
+    const subject = jwtPayload === null ? undefined : jwtPayload.sub
     const patchOperations = extractJsonPatchFromEvent(event)
-    const result = await patchById(sessionId, patchOperations)
+    const result = await patchById(sessionId, patchOperations, subject)
     return result
   } catch (error) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }

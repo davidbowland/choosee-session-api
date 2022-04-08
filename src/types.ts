@@ -41,7 +41,6 @@ export interface Session {
   address: string
   choiceId: string
   expiration: number
-  lastAccessed: number
   location: LatLng
   openNow: boolean
   owner?: string
