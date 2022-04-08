@@ -1,11 +1,11 @@
 import { APIGatewayProxyEventV2, NewSession } from '@types'
+import { decodedJwt, jsonPatchOperations, newSession } from '../__mocks__'
 import {
   extractJsonPatchFromEvent,
   extractJwtFromEvent,
   extractNewSessionFromEvent,
   formatSession,
 } from '@utils/events'
-import { jsonPatchOperations, newSession } from '../__mocks__'
 import patchEventJson from '@events/patch-item.json'
 import postEventJson from '@events/post-item.json'
 import postSendTextEventJson from '@events/post-send-text.json'
@@ -88,15 +88,7 @@ describe('events', () => {
   describe('extractJwtFromEvent', () => {
     test('expect payload successfully extracted', () => {
       const result = extractJwtFromEvent(postSendTextEventJson as unknown as APIGatewayProxyEventV2)
-      expect(result).toEqual({
-        aud: 'www.example.com',
-        exp: 1677989408,
-        iat: 1646453408,
-        iss: 'Online JWT Builder',
-        name: 'Dave',
-        phone_number: '+15551234567',
-        sub: 'jrocket@example.com',
-      })
+      expect(result).toEqual(decodedJwt)
     })
 
     test('expect null on invalid JWT', () => {

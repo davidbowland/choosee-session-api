@@ -89,8 +89,16 @@ export const jwt =
 export const userId = '+15551234567'
 
 export const decodedJwt = {
+  aud: 'links.dbowland.com',
+  'cognito:username': 'efd31b67-19f2-4d0a-a723-78506ffc0b7e',
+  exp: 1680925173,
+  iat: 1649389173,
+  iss: 'https://cognito-idp.us-east-2.amazonaws.com/us-east-2_HTQbsxXaj',
   name: 'Dave',
-  phone_number: userId,
+  phone_number: '+15551234567',
+  phone_number_verified: 'true',
+  sub: 'efd31b67-19f2-4d0a-a723-78506ffc0b7e',
+  token_use: 'id',
 }
 
 export const placeDetailsResponse: PlaceDetailsResponseData = {

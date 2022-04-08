@@ -21,7 +21,7 @@ describe('post-item', () => {
 
   beforeAll(() => {
     mocked(maps).createChoices.mockResolvedValue(choice)
-    mocked(events).extractJwtFromEvent.mockReturnValue(decodedJwt)
+    mocked(events).extractJwtFromEvent.mockReturnValue(null)
     mocked(events).extractNewSessionFromEvent.mockReturnValue(newSession)
     mocked(idGenerator).getNextId.mockResolvedValue(sessionId)
   })
@@ -71,10 +71,20 @@ describe('post-item', () => {
       )
     })
 
+    test('expect owner when JWT', async () => {
+      mocked(events).extractJwtFromEvent.mockReturnValueOnce(decodedJwt)
+      const result = await postItemHandler(event)
+      expect(result).toEqual(expect.objectContaining(status.CREATED))
+      expect(JSON.parse(result.body)).toEqual(
+        expect.objectContaining({
+          ...newSession,
+          owner: 'efd31b67-19f2-4d0a-a723-78506ffc0b7e',
+          sessionId: 'abc123',
+        })
+      )
+    })
+
     test('expect finished status when no data', async () => {
-      mocked(events).extractJwtFromEvent.mockImplementationOnce(() => {
-        throw new Error('JWT error')
-      })
       mocked(maps).createChoices.mockResolvedValue({ ...choice, choices: [] })
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))

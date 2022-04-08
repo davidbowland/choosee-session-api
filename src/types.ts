@@ -44,6 +44,7 @@ export interface Session {
   lastAccessed: number
   location: LatLng
   openNow: boolean
+  owner?: string
   pagesPerRound: number
   status: StatusObject
   type: PlaceType
@@ -92,7 +93,7 @@ export interface PlaceResponse {
 }
 
 export interface StringObject {
-  [key: string]: string
+  [key: string]: any
 }
 
 export type MessageType = 'PROMOTIONAL' | 'TRANSACTIONAL'

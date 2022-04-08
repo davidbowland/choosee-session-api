@@ -1,12 +1,12 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, NewSession, Session } from '../types'
+import { extractJwtFromEvent, extractNewSessionFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import { createChoices } from '../services/maps'
-import { extractNewSessionFromEvent } from '../utils/events'
 import { getNextId } from '../utils/id-generator'
 import { setSessionById } from '../services/dynamodb'
 import status from '../utils/status'
 
-const createNewSession = async (newSession: NewSession): Promise<APIGatewayProxyResultV2<any>> => {
+const createNewSession = async (newSession: NewSession, owner?: string): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const choice = await createChoices({
       address: newSession.address,
@@ -25,6 +25,7 @@ const createNewSession = async (newSession: NewSession): Promise<APIGatewayProxy
         lastAccessed: 0,
         location: choice.latLng,
         openNow: choice.openNow,
+        owner,
         pagesPerRound: choice.pagesPerRound,
         status: {
           current: choice.choices.length > 0 ? 'deciding' : 'finished',
@@ -53,7 +54,8 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
   log('Received event', { ...event, body: undefined })
   try {
     const newSession = extractNewSessionFromEvent(event)
-    return await createNewSession(newSession)
+    const jwtPayload = extractJwtFromEvent(event)
+    return await createNewSession(newSession, jwtPayload === null ? undefined : jwtPayload.sub)
   } catch (error) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
