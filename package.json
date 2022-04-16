@@ -1,6 +1,6 @@
 {
   "name": "choosee-session-api",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "Lambda choosee session API",
   "author": "David Bowland",
   "engines": {
