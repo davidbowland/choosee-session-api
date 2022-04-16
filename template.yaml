@@ -161,6 +161,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   DeleteItemLogGroup:
     Type: AWS::Logs::LogGroup
@@ -168,6 +169,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   DeleteItemLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -208,6 +216,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   GetAllItemsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -215,6 +224,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetAllItemsLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -263,6 +279,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   GetByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -270,6 +287,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetByIdLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -318,6 +342,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   GetDecisionsByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -325,6 +350,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetDecisionsByIdFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetDecisionsByIdLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -373,6 +405,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -380,6 +413,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PatchGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -433,6 +473,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PatchDecisionsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -440,6 +481,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PatchDecisionsItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PatchDecisionsGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -493,6 +541,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PostLogGroup:
     Type: AWS::Logs::LogGroup
@@ -500,6 +549,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -543,6 +599,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PostPruneLogGroup:
     Type: AWS::Logs::LogGroup
@@ -550,6 +607,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostPruneItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostPruneGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -591,6 +655,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PostSendTextLogGroup:
     Type: AWS::Logs::LogGroup
@@ -598,6 +663,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostSendTextFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostSendTextGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -639,6 +711,7 @@ Resources:
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
+        'environment': !Ref Environment
 
   PostSendTextToLogGroup:
     Type: AWS::Logs::LogGroup
@@ -646,6 +719,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostSendTextToFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostSendTextToGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -678,6 +758,8 @@ Resources:
           Value: 'choosee-session-api'
         - Key: 'created-for'
           Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   SessionTable:
     Type: AWS::DynamoDB::Table
@@ -706,6 +788,8 @@ Resources:
           Value: 'choosee-session-api'
         - Key: 'created-for'
           Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   # EventBridge
 
