@@ -4,7 +4,7 @@ import {
   NewChoice,
   NewSession,
   PatchOperation,
-  Place,
+  PlaceDetails,
   PlaceDetailsResponseData,
   Session,
 } from '@types'
@@ -16,7 +16,9 @@ export const choice: Choice = {
   choices: [
     {
       name: 'Love Sushi',
-      pic: 'https://lh3.googleusercontent.com/places/AAcXr8oBxiksR5oYZQn-zWB0nAq28N8_8NwS22B5DgfqUhbufLJG46BLgNnLw-le9aH3GJw8fO6R4zGuDdjr-91Xzz_jyU_XQAvvCLg=s1600-w400-h300',
+      photos: [
+        'https://lh3.googleusercontent.com/places/AAcXr8oBxiksR5oYZQn-zWB0nAq28N8_8NwS22B5DgfqUhbufLJG46BLgNnLw-le9aH3GJw8fO6R4zGuDdjr-91Xzz_jyU_XQAvvCLg=s1600-w400-h300',
+      ],
       placeId: 'ChIJSQVzHAW23IcR8J6g9IzzZ0k',
       priceLevel: 1,
       rating: 4.4,
@@ -40,14 +42,26 @@ export const newChoice: NewChoice = {
   type: 'restaurant',
 }
 
-export const place: Place = {
+export const place: PlaceDetails = {
+  formattedAddress: '225 S 9th St, Columbia, MO 65201, USA',
+  formattedPhoneNumber: '(573) 449-2454',
+  internationalPhoneNumber: '+1 573-449-2454',
   name: 'Columbia',
-  openHours: undefined,
-  pic: 'Aap_uEDinckK9Ca3tIgxigpNxy1THsppgE5H9ie_tFEc5pDYIDTSC52cWtEWifvmRD6_jhRuo4IsiRY5AZK2Y6_NRv4i_vsANZZpvsXj4gfkT4iYwpAp_i7tVHYRAgJ03ki3JzRv5_ouIPOpa9_uYavGE5fdhADeXeGRhkZnGWPXu5RxJpD1',
+  openHours: [
+    'Monday: 11:00 AM – 10:00 PM',
+    'Tuesday: 11:00 AM – 10:00 PM',
+    'Wednesday: 11:00 AM – 10:00 PM',
+    'Thursday: 11:00 AM – 10:00 PM',
+    'Friday: 11:00 AM – 11:00 PM',
+    'Saturday: 11:00 AM – 11:00 PM',
+    'Sunday: 11:00 AM – 10:00 PM',
+  ],
+  photos: ['a-photo'],
   placeId: '2345678ihbnmf',
   priceLevel: 1,
   rating: 2,
   vicinity: 'Columbia',
+  website: 'http://www.shakespeares.com/',
 }
 
 export const decision: Decision = {

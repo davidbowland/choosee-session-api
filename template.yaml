@@ -507,7 +507,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 45
+      Timeout: 90
       Description: choosee-session-api post item
       Policies:
         - AWSLambdaBasicExecutionRole

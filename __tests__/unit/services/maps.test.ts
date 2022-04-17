@@ -1,5 +1,5 @@
-import { advanceRounds, createChoices, fetchChoices, fetchPlaceDetails } from '@services/maps'
-import { choice, choiceId, newChoice, placeDetailsResponse, placeId } from '../__mocks__'
+import { advanceRounds, createChoices, fetchChoices } from '@services/maps'
+import { choice, choiceId, newChoice } from '../__mocks__'
 import { mapsApiKey, mapsApiUrl } from '@config'
 import { rest, server } from '@setup-server'
 
@@ -86,41 +86,15 @@ describe('choices', () => {
       expect(result).toEqual([
         {
           name: 'Love Sushi',
-          pic: 'https://lh3.googleusercontent.com/places/AAcXr8oBxiksR5oYZQn-zWB0nAq28N8_8NwS22B5DgfqUhbufLJG46BLgNnLw-le9aH3GJw8fO6R4zGuDdjr-91Xzz_jyU_XQAvvCLg=s1600-w400-h300',
+          photos: [
+            'https://lh3.googleusercontent.com/places/AAcXr8oBxiksR5oYZQn-zWB0nAq28N8_8NwS22B5DgfqUhbufLJG46BLgNnLw-le9aH3GJw8fO6R4zGuDdjr-91Xzz_jyU_XQAvvCLg=s1600-w400-h300',
+          ],
           placeId: 'ChIJSQVzHAW23IcR8J6g9IzzZ0k',
           priceLevel: 1,
           rating: 4.4,
           vicinity: '2101 West Broadway Suite S, Columbia',
         },
       ])
-    })
-  })
-
-  describe('fetchPlaceDetails', () => {
-    const getDetailsEndpoint = jest.fn().mockReturnValue(placeDetailsResponse.result)
-
-    beforeAll(() => {
-      server.use(
-        rest.get(`${mapsApiUrl}/places/:id`, async (req, res, ctx) => {
-          const { id } = req.params
-          if (placeId !== id || mapsApiKey !== req.headers.get('x-api-key')) {
-            return res(ctx.status(403))
-          }
-
-          const body = getDetailsEndpoint(req.body)
-          return res(body ? ctx.json(body) : ctx.status(400))
-        })
-      )
-    })
-
-    test('expect get details endpoint called with correct ID and API key', async () => {
-      await fetchPlaceDetails(placeId)
-      expect(getDetailsEndpoint).toHaveBeenCalled()
-    })
-
-    test('expect details returned', async () => {
-      const result = await fetchPlaceDetails(placeId)
-      expect(result).toEqual(placeDetailsResponse.result)
     })
   })
 })

@@ -1,7 +1,6 @@
-import { DecisionObject, Place, PlaceDetails, Session } from '../types'
-import { advanceRounds, fetchChoices, fetchPlaceDetails } from '../services/maps'
+import { DecisionObject, Session } from '../types'
+import { advanceRounds, fetchChoices } from '../services/maps'
 import { getDecisionById, queryUserIdsBySessionId } from '../services/dynamodb'
-import { logError } from './logging'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
   choiceNames.every((name) => name in decisions)
@@ -10,28 +9,6 @@ const intersection = (set1: string[], set2: string[]): string[] => set1.filter((
 
 const extractPositiveDecisions = (decisions: DecisionObject): string[] =>
   Object.keys(decisions).filter((name) => decisions[name])
-
-const enhanceWithDetails = async (place: Place): Promise<PlaceDetails> => {
-  if (place.placeId) {
-    try {
-      const winnerDetails = await fetchPlaceDetails(place.placeId)
-      const winnerResult = winnerDetails.result
-      if (winnerResult) {
-        return {
-          ...place,
-          formattedAddress: winnerResult.formatted_address,
-          formattedPhoneNumber: winnerResult.formatted_phone_number,
-          internationalPhoneNumber: winnerResult.international_phone_number,
-          openHours: winnerResult.opening_hours?.weekday_text,
-          website: winnerResult.website,
-        }
-      }
-    } catch (error) {
-      logError(error)
-    }
-  }
-  return place
-}
 
 export const updateSessionStatus = async (sessionId: string, session: Session): Promise<Session> => {
   const decisionIds = await queryUserIdsBySessionId(sessionId)
@@ -62,7 +39,7 @@ export const updateSessionStatus = async (sessionId: string, session: Session): 
       status: {
         current: 'winner',
         pageId: session.status.pageId,
-        winner: await enhanceWithDetails(winnerPlace),
+        winner: winnerPlace,
       },
     }
   }

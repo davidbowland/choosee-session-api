@@ -2,8 +2,7 @@ import { mocked } from 'jest-mock'
 
 import * as dynamodb from '@services/dynamodb'
 import * as maps from '@services/maps'
-import { choice, place, placeDetailsResponse, session, sessionId, userId } from '../__mocks__'
-import { PlaceDetailsResponseData } from '@types'
+import { choice, place, session, sessionId, userId } from '../__mocks__'
 import { updateSessionStatus } from '@utils/session'
 
 jest.mock('@services/dynamodb')
@@ -16,7 +15,6 @@ describe('sessions', () => {
     mocked(dynamodb).queryUserIdsBySessionId.mockResolvedValue(['+15551234567', '+15551234568'])
     mocked(maps).advanceRounds.mockResolvedValue(choice)
     mocked(maps).fetchChoices.mockResolvedValue([place])
-    mocked(maps).fetchPlaceDetails.mockResolvedValue(placeDetailsResponse)
   })
 
   describe('updateSessionStatus', () => {
@@ -61,7 +59,6 @@ describe('sessions', () => {
 
     describe('winner', () => {
       test('expect status changed to winner when decisions match', async () => {
-        mocked(maps).fetchPlaceDetails.mockRejectedValueOnce(undefined)
         const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: place } }))
       })
@@ -70,18 +67,6 @@ describe('sessions', () => {
         const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(
           expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
-        )
-      })
-
-      test('expect status changed to winner enhanced with details minus open hours', async () => {
-        mocked(maps).fetchPlaceDetails.mockResolvedValueOnce({
-          result: { ...placeDetailsResponse.result, opening_hours: undefined },
-        } as unknown as PlaceDetailsResponseData)
-        const result = await updateSessionStatus(sessionId, session)
-        expect(result).toEqual(
-          expect.objectContaining({
-            status: { current: 'winner', pageId: 0, winner: { ...winningPlace, openHours: undefined } },
-          })
         )
       })
 

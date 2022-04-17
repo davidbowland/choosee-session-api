@@ -6,20 +6,18 @@ import { LatLng } from '@googlemaps/google-maps-services-js'
 
 export type PlaceType = 'restaurant' | 'meal_delivery' | 'meal_takeaway' | 'bar' | 'cafe' | 'night_club'
 
-export interface Place {
-  name: string
-  openHours?: string[]
-  pic?: string
-  placeId: string
-  priceLevel: number
-  rating: number
-  vicinity: string
-}
-
-export interface PlaceDetails extends Place {
+export interface PlaceDetails {
   formattedAddress?: string
   formattedPhoneNumber?: string
   internationalPhoneNumber?: string
+  name: string
+  openHours?: string[]
+  photos: string[]
+  placeId: string
+  priceLevel: number
+  rating: number
+  ratingsTotal?: number
+  vicinity: string
   website?: string
 }
 
@@ -67,7 +65,7 @@ export interface NewSession {
 export interface Choice {
   address: string
   choiceId?: string
-  choices: Place[]
+  choices: PlaceDetails[]
   expiration: number
   latLng: LatLng
   nextPageToken: string
@@ -87,7 +85,7 @@ export interface NewChoice {
 }
 
 export interface PlaceResponse {
-  data: Place[]
+  data: PlaceDetails[]
   nextPageToken: string
 }
 
