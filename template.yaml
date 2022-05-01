@@ -736,6 +736,58 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostSendTextToLogGroup
 
+  PostUpdateStatusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-update-status.postUpdateStatus
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: choosee-session-api post update status
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /sessions/{sessionId}/update-status
+            Method: post
+            Auth:
+              ApiKeyRequired: true
+      Tags:
+        'created-by': 'choosee-session-api'
+        'created-for': 'choosee'
+        'environment': !Ref Environment
+
+  PostUpdateStatusLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostUpdateStatusFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostUpdateStatusFunction}
+      RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'choosee-session-api'
+        - Key: 'created-for'
+          Value: 'choosee'
+        - Key: 'environment'
+          Value: !Ref Environment
+
+  PostUpdateStatusGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostUpdateStatusLogGroup
+
   # DynamoDB
 
   DecisionTable:

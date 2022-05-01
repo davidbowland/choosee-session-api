@@ -9,13 +9,9 @@ export const getDecisionsByIdHandler = async (event: APIGatewayProxyEventV2): Pr
   const sessionId = event.pathParameters.sessionId
   const userId = event.pathParameters.userId
 
-  try {
-    const jwtPayload = extractJwtFromEvent(event)
-    if (jwtPayload === null || jwtPayload.phone_number !== userId) {
-      return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
-    }
-  } catch {
-    log('No JWT found with request')
+  const jwtPayload = extractJwtFromEvent(event)
+  if (jwtPayload && jwtPayload.phone_number !== userId) {
+    return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
   }
 
   const result = await getDecisionById(sessionId, userId)

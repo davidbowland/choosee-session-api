@@ -101,9 +101,10 @@ describe('events', () => {
       expect(result).toBe(null)
     })
 
-    test('expect error on invalid event', () => {
+    test('expect null on missing header', () => {
       const event = { ...postSendTextEventJson, headers: {} } as unknown as APIGatewayProxyEventV2
-      expect(() => extractJwtFromEvent(event)).toThrow()
+      const result = extractJwtFromEvent(event)
+      expect(result).toBe(null)
     })
   })
 })
