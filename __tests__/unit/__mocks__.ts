@@ -97,16 +97,16 @@ export const sessionId = 'abc123'
 export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/voterCount', value: 1 }]
 
 export const jwt =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NDY0NTM0MDgsImV4cCI6MTY3Nzk4OTQwOCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsInBob25lX251bWJlciI6IisxNTU1MTIzNDU2NyIsIm5hbWUiOiJEYXZlIn0.cGg6zUrwlpzMIaczADmZLJgNDXMBPR2Gdixx_XlDr9Y'
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvZ25pdG8taWRwLnVzLWVhc3QtMi5hbWF6b25hd3MuY29tL3VzLWVhc3QtMl94cXh6eUlPejQiLCJpYXQiOjE2NTI2OTEwMDAsImV4cCI6MTY4NDIyNzAwMCwiYXVkIjoiY2hvb3NlZS5kYm93bGFuZC5jb20iLCJzdWIiOiJlZmQzMWI2Ny0xOWYyLTRkMGEtYTcyMy03ODUwNmZmYzBiN2UiLCJuYW1lIjoiRGF2ZSIsImNvZ25pdG86dXNlcm5hbWUiOiJlZmQzMWI2Ny0xOWYyLTRkMGEtYTcyMy03ODUwNmZmYzBiN2UiLCJwaG9uZV9udW1iZXIiOiIrMTU1NTEyMzQ1NjciLCJwaG9uZV9udW1iZXJfdmVyaWZpZWQiOiJ0cnVlIiwidG9rZW5fdXNlIjoiaWQifQ.BW3Y6LNrtZDexFdkpq3FE6ZLu10B--030jJw_41Kvvg'
 
 export const userId = '+15551234567'
 
 export const decodedJwt = {
-  aud: 'links.dbowland.com',
+  aud: 'choosee.dbowland.com',
   'cognito:username': 'efd31b67-19f2-4d0a-a723-78506ffc0b7e',
-  exp: 1680925173,
-  iat: 1649389173,
-  iss: 'https://cognito-idp.us-east-2.amazonaws.com/us-east-2_HTQbsxXaj',
+  exp: 1684227000,
+  iat: 1652691000,
+  iss: 'https://cognito-idp.us-east-2.amazonaws.com/us-east-2_xqxzyIOz4',
   name: 'Dave',
   phone_number: '+15551234567',
   phone_number_verified: 'true',

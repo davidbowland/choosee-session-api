@@ -26,13 +26,13 @@ Mappings:
       certificateEdge: adce1a21-90b4-4120-8548-111215e582f0
       certificateRegional: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://choosee.dbowland.com
-      decisionTable: choosee-session-decision
+      decisionTable: choosee-session-api-decisions
       domain: choosee-session-api.dbowland.com
       domainInternal: choosee-session-api-internal.dbowland.com
       logStreamFunction: log-subscriber
       mapsApiUrl: https://choosee-maps-api-internal.dbowland.com/v1
       schedulerFunction: scheduler-service
-      sessionTable: choosee-session-api
+      sessionTable: choosee-session-api-sessions
       smsApiUrl: https://sms-queue-api.dbowland.com/v1
       userPool: us-east-2_HTQbsxXaj
       userPoolClient: gd98upqar0ovh3bktvno6dng9
@@ -41,13 +41,13 @@ Mappings:
       certificateEdge: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       certificateRegional: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://choosee.bowland.link
-      decisionTable: choosee-session-decision-test
+      decisionTable: choosee-session-api-decisions-test
       domain: choosee-session-api.bowland.link
       domainInternal: choosee-session-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
       mapsApiUrl: https://choosee-maps-api-internal.bowland.link/v1
       schedulerFunction: scheduler-service-test
-      sessionTable: choosee-session-api-test
+      sessionTable: choosee-session-api-sessions-test
       smsApiUrl: https://sms-queue-api.bowland.link/v1
       userPool: us-east-2_xqxzyIOz4
       userPoolClient: 135qlssf7st66v1vl5dtopfeks
