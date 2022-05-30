@@ -376,7 +376,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
+      Timeout: 15
       Description: choosee-session-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -439,7 +439,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
+      Timeout: 60
       Description: choosee-session-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -575,7 +575,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 60
+      Timeout: 90
       Description: choosee-session-api post start prune
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -745,7 +745,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
+      Timeout: 60
       Description: choosee-session-api post update status
       Policies:
         - AWSLambdaBasicExecutionRole
