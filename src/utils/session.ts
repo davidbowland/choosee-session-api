@@ -44,12 +44,22 @@ export const updateSessionStatus = async (sessionId: string, session: Session): 
     }
   }
 
-  const newChoices = await advanceRounds(session.choiceId)
-  return {
-    ...session,
-    status: {
-      current: newChoices.choices.length > 0 ? 'deciding' : 'finished',
-      pageId: session.status.pageId + 1,
-    },
+  try {
+    const newChoices = await advanceRounds(session.choiceId)
+    return {
+      ...session,
+      status: {
+        current: newChoices.choices.length > 0 ? 'deciding' : 'finished',
+        pageId: session.status.pageId + 1,
+      },
+    }
+  } catch (error) {
+    return {
+      ...session,
+      status: {
+        current: 'finished',
+        pageId: session.status.pageId + 1,
+      },
+    }
   }
 }

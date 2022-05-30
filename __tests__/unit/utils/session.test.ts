@@ -103,9 +103,18 @@ describe('sessions', () => {
     })
 
     describe('finished', () => {
+      beforeAll(() => {
+        mocked(dynamodb).getDecisionById.mockResolvedValue({ decisions: { Columbia: false } })
+      })
+
       test('expect status to be finished when no more results', async () => {
         mocked(maps).advanceRounds.mockResolvedValue({ ...choice, choices: [] })
-        mocked(dynamodb).getDecisionById.mockResolvedValueOnce({ decisions: { Columbia: false } })
+        const result = await updateSessionStatus(sessionId, session)
+        expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
+      })
+
+      test('expect status to be finished when advanceRounds rejects', async () => {
+        mocked(maps).advanceRounds.mockRejectedValue(undefined)
         const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(expect.objectContaining({ status: { current: 'finished', pageId: 1 } }))
       })
