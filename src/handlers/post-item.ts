@@ -1,4 +1,4 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, NewSession, Session } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, NewSession, RankByType, Session } from '../types'
 import { extractJwtFromEvent, extractNewSessionFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import { createChoices } from '../services/maps'
@@ -13,6 +13,8 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
       expiration: newSession.expiration,
       openNow: newSession.openNow,
       pagesPerRound: newSession.pagesPerRound,
+      radius: newSession.radius,
+      rankBy: newSession.rankBy,
       type: newSession.type,
     })
 
@@ -26,6 +28,8 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
         openNow: choice.openNow,
         owner,
         pagesPerRound: choice.pagesPerRound,
+        radius: choice.radius,
+        rankBy: choice.rankBy as RankByType,
         status: {
           current: choice.choices.length > 0 ? 'deciding' : 'finished',
           pageId: 0,

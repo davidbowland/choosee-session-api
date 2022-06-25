@@ -19,6 +19,15 @@ export const formatSession = (session: NewSession): NewSession => {
   if (session.pagesPerRound !== undefined && (session.pagesPerRound < 1 || session.pagesPerRound > 2)) {
     throw new Error('pagesPerRound must be 1 thru 2')
   }
+  if (session.rankBy !== 'distance' && session.rankBy !== 'prominence') {
+    throw new Error('rankBy must be "distance" or "prominence"')
+  }
+  if (
+    session.rankBy === 'prominence' &&
+    (session.radius === undefined || session.radius < 1 || session.radius > 50_000)
+  ) {
+    throw new Error('radius must be 1 thru 50,000 when rankBy is "prominence"')
+  }
   if (['restaurant', 'meal_delivery', 'meal_takeaway', 'bar', 'cafe', 'night_club'].indexOf(session.type) < 0) {
     throw new Error('type must be one of "restaurant", "meal_delivery", "meal_takeaway", "bar", "cafe", "night_club"')
   }
@@ -30,6 +39,8 @@ export const formatSession = (session: NewSession): NewSession => {
     expiration: session.expiration ?? lastExpiration,
     openNow: session.openNow ?? false,
     pagesPerRound: session.pagesPerRound ?? 1,
+    radius: session.radius,
+    rankBy: session.rankBy,
     type: session.type,
     voterCount: session.voterCount,
   }

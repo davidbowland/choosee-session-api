@@ -34,11 +34,13 @@ export const choice: Choice = {
     'Aap_uEBe77WMktiYhLhjbqPV2oSOlCeiCE_bzSszaUUpFtPRDp-UAKfNsRwa1JehQEidpzl0bY6XvmJ5smSz8S6weXEb7u-2r2tldpoGZmjnrhmdDnnLkJlujVDJmIz_ACwth2yWuRuZuVUnZj3tgT-minYVN60-aO4rpQ5YOt_YekIrW9b1CnRq0MLhaaBT-J684V9qWSGTRXq_pMqoKtgG-JhDrQJUnH2WbpNXebyxhOnAujlFsTyPzrFtvb59qZMYOG7MiM7MHSAEv1SM9WTG-BEiHkS2NVvsT7JYeXFg03zYC-ZmMpBhKIYHH4F_KX6gEecJR57gDOa3lO3dmFSAdvk6TwviV7iN3_RjpuH3gHOXCZJ9JBpud3_53fXfszO1SM7Mh5MdG0XLA9r7ubxxQHT-aIhy7OAnqs8Wm_HpLRS7qdjGLYINlTBMxAIXN50',
   openNow: false,
   pagesPerRound: 1,
+  rankBy: 'distance',
   type: 'restaurant',
 }
 
 export const newChoice: NewChoice = {
   address: 'Columbia, MO 65203, USA',
+  rankBy: 'distance',
   type: 'restaurant',
 }
 
@@ -70,6 +72,7 @@ export const decision: Decision = {
 
 export const newSession: NewSession = {
   address: 'Columbia, MO 65203, USA',
+  rankBy: 'distance',
   type: 'restaurant',
   voterCount: 2,
 }
@@ -84,6 +87,7 @@ export const session: Session = {
   },
   openNow: false,
   pagesPerRound: 1,
+  rankBy: 'distance',
   status: {
     current: 'deciding',
     pageId: 0,
