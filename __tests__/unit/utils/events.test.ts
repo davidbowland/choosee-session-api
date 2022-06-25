@@ -27,6 +27,16 @@ describe('events', () => {
       expect(() => formatSession(invalidSession)).toThrow()
     })
 
+    test.each([undefined, 'fnord'])('expect error on invalid rankBy (%s)', (rankBy) => {
+      const invalidSession = { ...newSession, rankBy } as NewSession
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
+    test.each([undefined, 0, 50_001])('expect error when ranked by prominence and bad radius', (radius) => {
+      const invalidSession = { ...newSession, radius, rankBy: 'prominence' } as NewSession
+      expect(() => formatSession(invalidSession)).toThrow()
+    })
+
     test.each([undefined, 'fnord'])('expect error on invalid type (%s)', (type) => {
       const invalidSession = { ...newSession, type } as NewSession
       expect(() => formatSession(invalidSession)).toThrow()

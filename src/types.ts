@@ -6,6 +6,8 @@ import { LatLng } from '@googlemaps/google-maps-services-js'
 
 export type PlaceType = 'restaurant' | 'meal_delivery' | 'meal_takeaway' | 'bar' | 'cafe' | 'night_club'
 
+export type RankByType = 'distance' | 'prominence'
+
 export interface PlaceDetails {
   formattedAddress?: string
   formattedPhoneNumber?: string
@@ -43,6 +45,8 @@ export interface Session {
   openNow: boolean
   owner?: string
   pagesPerRound: number
+  radius?: number
+  rankBy: RankByType
   status: StatusObject
   type: PlaceType
   voterCount: number
@@ -58,6 +62,8 @@ export interface NewSession {
   expiration?: number
   openNow?: boolean
   pagesPerRound?: number
+  radius?: number
+  rankBy?: RankByType
   type: PlaceType
   voterCount: number
 }
@@ -71,6 +77,8 @@ export interface Choice {
   nextPageToken: string
   openNow: boolean
   pagesPerRound: number
+  radius?: number
+  rankBy: string
   type: PlaceType
 }
 
@@ -81,6 +89,8 @@ export interface NewChoice {
   lng?: number
   openNow?: boolean
   pagesPerRound?: number
+  radius?: number
+  rankBy?: string
   type: PlaceType
 }
 
