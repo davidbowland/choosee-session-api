@@ -16,6 +16,15 @@ export const formatSession = (session: NewSession): NewSession => {
   if (session.expiration !== undefined && session.expiration > lastExpiration) {
     throw new Error('expiration is outside acceptable range')
   }
+  if (session.maxPrice !== undefined && (session.maxPrice < 0 || session.maxPrice > 4)) {
+    throw new Error('maxPrice must be 0 thru 4')
+  }
+  if (session.minPrice !== undefined && (session.minPrice < 0 || session.minPrice > 4)) {
+    throw new Error('minPrice must be 0 thru 4')
+  }
+  if (session.maxPrice !== undefined && session.minPrice !== undefined && session.maxPrice < session.minPrice) {
+    throw new Error('minPrice must be less or equal to than maxPrice')
+  }
   if (session.pagesPerRound !== undefined && (session.pagesPerRound < 1 || session.pagesPerRound > 2)) {
     throw new Error('pagesPerRound must be 1 thru 2')
   }
@@ -37,6 +46,8 @@ export const formatSession = (session: NewSession): NewSession => {
   return {
     address: session.address,
     expiration: session.expiration ?? lastExpiration,
+    maxPrice: session.maxPrice,
+    minPrice: session.minPrice,
     openNow: session.openNow ?? false,
     pagesPerRound: session.pagesPerRound ?? 1,
     radius: session.radius,

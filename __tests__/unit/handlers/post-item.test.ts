@@ -61,6 +61,8 @@ describe('post-item', () => {
       expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(mocked(maps).createChoices).toHaveBeenCalledWith({
         address: 'Columbia, MO 65203, USA',
+        maxPrice: 4,
+        minPrice: 2,
         rankBy: 'distance',
         type: 'restaurant',
       })

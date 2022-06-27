@@ -42,6 +42,8 @@ export interface Session {
   choiceId: string
   expiration: number
   location: LatLng
+  maxPrice: number
+  minPrice: number
   openNow: boolean
   owner?: string
   pagesPerRound: number
@@ -60,6 +62,8 @@ export interface SessionBatch {
 export interface NewSession {
   address: string
   expiration?: number
+  maxPrice?: number
+  minPrice?: number
   openNow?: boolean
   pagesPerRound?: number
   radius?: number
@@ -75,6 +79,8 @@ export interface Choice {
   expiration: number
   latLng: LatLng
   nextPageToken: string
+  maxPrice: number
+  minPrice: number
   openNow: boolean
   pagesPerRound: number
   radius?: number
@@ -87,6 +93,8 @@ export interface NewChoice {
   expiration?: number
   lat?: number
   lng?: number
+  maxPrice?: number
+  minPrice?: number
   openNow?: boolean
   pagesPerRound?: number
   radius?: number

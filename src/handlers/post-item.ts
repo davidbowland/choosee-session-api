@@ -11,6 +11,8 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
     const choice = await createChoices({
       address: newSession.address,
       expiration: newSession.expiration,
+      maxPrice: newSession.maxPrice,
+      minPrice: newSession.minPrice,
       openNow: newSession.openNow,
       pagesPerRound: newSession.pagesPerRound,
       radius: newSession.radius,
@@ -25,6 +27,8 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
         choiceId: choice.choiceId,
         expiration: newSession.expiration,
         location: choice.latLng,
+        maxPrice: choice.maxPrice,
+        minPrice: choice.minPrice,
         openNow: choice.openNow,
         owner,
         pagesPerRound: choice.pagesPerRound,
