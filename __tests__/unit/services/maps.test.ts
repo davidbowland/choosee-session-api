@@ -3,6 +3,8 @@ import { choice, choiceId, newChoice } from '../__mocks__'
 import { mapsApiKey, mapsApiUrl } from '@config'
 import { rest, server } from '@setup-server'
 
+jest.mock('@utils/logging')
+
 describe('choices', () => {
   describe('advanceRounds', () => {
     const postAdvanceEndpoint = jest.fn().mockReturnValue(choice)

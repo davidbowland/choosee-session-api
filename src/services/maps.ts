@@ -2,7 +2,9 @@ import axios from 'axios'
 
 import { Choice, NewChoice, PlaceDetails } from '../types'
 import { mapsApiKey, mapsApiUrl } from '../config'
+import { xrayCaptureHttps } from '../utils/logging'
 
+xrayCaptureHttps()
 const api = axios.create({
   baseURL: mapsApiUrl,
   headers: { 'x-api-key': mapsApiKey },
