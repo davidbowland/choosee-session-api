@@ -25,6 +25,12 @@ describe('get-decisions-by-id', () => {
       expect(result).toEqual(expect.objectContaining(status.FORBIDDEN))
     })
 
+    test('expect NOT_FOUND when getDecisionById rejects', async () => {
+      mocked(dynamodb).getDecisionById.mockRejectedValueOnce(undefined)
+      const result = await getDecisionsByIdHandler(event)
+      expect(result).toEqual(status.NOT_FOUND)
+    })
+
     test('expect OK and results when id exists', async () => {
       const result = await getDecisionsByIdHandler(event)
       expect(result).toEqual({

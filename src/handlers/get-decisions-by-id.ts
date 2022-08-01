@@ -14,6 +14,10 @@ export const getDecisionsByIdHandler = async (event: APIGatewayProxyEventV2): Pr
     return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
   }
 
-  const result = await getDecisionById(sessionId, userId)
-  return { ...status.OK, body: JSON.stringify(result) }
+  try {
+    const result = await getDecisionById(sessionId, userId)
+    return { ...status.OK, body: JSON.stringify(result) }
+  } catch (error) {
+    return status.NOT_FOUND
+  }
 }

@@ -54,8 +54,20 @@ describe('patch-decisions-by-id', () => {
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })
 
-    test('expect INTERNAL_SERVER_ERROR on getSessionById reject', async () => {
-      mocked(dynamodb).getSessionById.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND on getDecisionById reject', async () => {
+      mocked(dynamodb).getDecisionById.mockRejectedValueOnce(undefined)
+      const result = await patchDecisionByIdHandler(event)
+      expect(result).toEqual(status.NOT_FOUND)
+    })
+
+    test('expect BAD_REQUEST when JSON patch invalid', async () => {
+      mocked(events).extractJsonPatchFromEvent.mockReturnValueOnce([{ op: 'fnord' }] as any)
+      const result = await patchDecisionByIdHandler(event)
+      expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
+    })
+
+    test('expect INTERNAL_SERVER_ERROR on setDecisionById reject', async () => {
+      mocked(dynamodb).setDecisionById.mockRejectedValueOnce(undefined)
       const result = await patchDecisionByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
