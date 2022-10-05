@@ -542,7 +542,7 @@ Resources:
             Path: /sessions
             Method: post
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'choosee-session-api'
         'created-for': 'choosee'
