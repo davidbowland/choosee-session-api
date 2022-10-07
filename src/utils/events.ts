@@ -72,3 +72,5 @@ export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchO
 
 export const extractJwtFromEvent = (event: APIGatewayProxyEventV2): StringObject =>
   jwt.decode((event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer /i, ''))
+
+export const extractTokenFromEvent = (event: APIGatewayProxyEventV2): string => event.headers['x-recaptcha-token']

@@ -4,6 +4,7 @@ import * as dynamodb from '@services/dynamodb'
 import * as events from '@utils/events'
 import * as idGenerator from '@utils/id-generator'
 import * as maps from '@services/maps'
+import * as recaptcha from '@services/recaptcha'
 import { choice, decodedJwt, newSession, sessionId } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/post-item.json'
@@ -12,6 +13,7 @@ import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
 jest.mock('@services/maps')
+jest.mock('@services/recaptcha')
 jest.mock('@utils/events')
 jest.mock('@utils/id-generator')
 jest.mock('@utils/logging')
@@ -24,9 +26,16 @@ describe('post-item', () => {
     mocked(events).extractJwtFromEvent.mockReturnValue(null)
     mocked(events).extractNewSessionFromEvent.mockReturnValue(newSession)
     mocked(idGenerator).getNextId.mockResolvedValue(sessionId)
+    mocked(recaptcha).getScoreFromEvent.mockResolvedValue(1)
   })
 
   describe('postItemHandler', () => {
+    test('expect FORBIDDEN when getScoreFromEvent is under threshold', async () => {
+      mocked(recaptcha).getScoreFromEvent.mockResolvedValueOnce(0)
+      const result = await postItemHandler(event)
+      expect(result).toEqual(status.FORBIDDEN)
+    })
+
     test('expect BAD_REQUEST when new session is invalid', async () => {
       mocked(events).extractNewSessionFromEvent.mockImplementationOnce(() => {
         throw new Error('Bad request')

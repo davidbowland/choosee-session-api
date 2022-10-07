@@ -4,6 +4,7 @@ import {
   extractJsonPatchFromEvent,
   extractJwtFromEvent,
   extractNewSessionFromEvent,
+  extractTokenFromEvent,
   formatSession,
 } from '@utils/events'
 import patchEventJson from '@events/patch-item.json'
@@ -130,6 +131,14 @@ describe('events', () => {
       const event = { ...postSendTextEventJson, headers: {} } as unknown as APIGatewayProxyEventV2
       const result = extractJwtFromEvent(event)
       expect(result).toBe(null)
+    })
+  })
+
+  describe('extractTokenFromEvent', () => {
+    const event = postEventJson as unknown as APIGatewayProxyEventV2
+    test('expect token extracted from event', async () => {
+      const result = extractTokenFromEvent(event)
+      expect(result).toEqual('ytrewsdfghjmnbgtyu')
     })
   })
 })
