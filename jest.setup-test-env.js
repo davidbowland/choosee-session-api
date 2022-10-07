@@ -18,6 +18,10 @@ process.env.ID_MIN_LENGTH = '3'
 process.env.ID_MAX_LENGTH = '4'
 process.env.SESSION_EXPIRE_HOURS = '30'
 
+// reCAPTCHA
+
+process.env.RECAPTCHA_SECRET_KEY = 'ertyuiknbghj'
+
 // SMS Queue API
 
 process.env.CORS_DOMAIN = 'http://choosee.bowland.link'

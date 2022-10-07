@@ -16,6 +16,9 @@ Parameters:
   MapsApiKey:
     Type: String
     Description: API key for choosee-maps-api
+  RecaptchaSecretKey:
+    Type: String
+    Description: Secret key for reCAPTCHA v3
   SmsApiKey:
     Type: String
     Description: API key for sms-queue-api
@@ -98,6 +101,7 @@ Resources:
           - X-Amz-Date
           - X-Amz-Security-Token
           - X-Api-Key
+          - X-Recaptcha-Token
         AllowMethods:
           - DELETE
           - GET

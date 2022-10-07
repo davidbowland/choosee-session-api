@@ -3,6 +3,7 @@ import { extractJwtFromEvent, extractNewSessionFromEvent } from '../utils/events
 import { log, logError } from '../utils/logging'
 import { createChoices } from '../services/maps'
 import { getNextId } from '../utils/id-generator'
+import { getScoreFromEvent } from '../services/recaptcha'
 import { setSessionById } from '../services/dynamodb'
 import status from '../utils/status'
 
@@ -60,6 +61,12 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
+    const score = await getScoreFromEvent(event)
+    log('reCAPTCHA result', { score })
+    if (score < 0.7) {
+      return status.FORBIDDEN
+    }
+
     const newSession = extractNewSessionFromEvent(event)
     const jwtPayload = extractJwtFromEvent(event)
     return await createNewSession(newSession, jwtPayload === null ? undefined : jwtPayload.sub)
