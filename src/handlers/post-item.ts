@@ -25,8 +25,8 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
       const sessionId = await getNextId()
       const session: Session = {
         address: choice.address,
-        choiceId: choice.choiceId,
-        expiration: newSession.expiration,
+        choiceId: choice.choiceId as string,
+        expiration: newSession.expiration as number,
         location: choice.latLng,
         maxPrice: choice.maxPrice,
         minPrice: choice.minPrice,
@@ -53,7 +53,7 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
       logError(error)
       return status.INTERNAL_SERVER_ERROR
     }
-  } catch (error) {
+  } catch (error: any) {
     return { body: JSON.stringify(error.response.data), statusCode: error.response.status }
   }
 }
@@ -70,7 +70,7 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
     const newSession = extractNewSessionFromEvent(event)
     const jwtPayload = extractJwtFromEvent(event)
     return await createNewSession(newSession, jwtPayload === null ? undefined : jwtPayload.sub)
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

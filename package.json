@@ -25,7 +25,7 @@
     "quick-start": "tsc && ./scripts/runLocal.sh",
     "test": "jest --colors",
     "typecheck": "tsc --noEmit",
-    "update": "ncu -u && npm i && npm audit fix && npm run test && npm dedupe"
+    "update": "ncu -u && npm i && npm audit fix --audit-level=none && npm run test && npm dedupe"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
@@ -52,6 +52,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@types/aws-lambda": "^8.10.106",
     "@types/jest": "^29.1.1",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.8.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",

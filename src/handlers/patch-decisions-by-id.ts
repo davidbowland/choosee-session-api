@@ -45,7 +45,7 @@ const applyJsonPatch = async (
         mutateObjectOnJsonPatch
       ).newDocument
       return await updateDecisionAndSession(sessionId, userId, decision, updatedDecision)
-    } catch (error) {
+    } catch (error: any) {
       return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
     }
   } catch (error) {
@@ -58,8 +58,8 @@ export const patchDecisionByIdHandler = async (
 ): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const sessionId = event.pathParameters.sessionId
-    const userId = event.pathParameters.userId
+    const sessionId = event.pathParameters?.sessionId as string
+    const userId = event.pathParameters?.userId as string
 
     const jwtPayload = extractJwtFromEvent(event)
     if (jwtPayload && jwtPayload.phone_number !== userId) {
@@ -69,7 +69,7 @@ export const patchDecisionByIdHandler = async (
     const patchOperations = extractJsonPatchFromEvent(event)
     const result = await applyJsonPatch(sessionId, userId, patchOperations)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

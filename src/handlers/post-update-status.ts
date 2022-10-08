@@ -7,7 +7,7 @@ import { updateSessionStatus } from '../utils/session'
 export const postUpdateStatus = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const sessionId = event.pathParameters.sessionId
+    const sessionId = event.pathParameters?.sessionId as string
 
     const session = await getSessionById(sessionId)
     const updatedSession = await updateSessionStatus(sessionId, session)

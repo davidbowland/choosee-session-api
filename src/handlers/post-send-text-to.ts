@@ -8,8 +8,8 @@ import status from '../utils/status'
 export const postSendTextToHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const sessionId = event.pathParameters.sessionId
-    const toUserId = event.pathParameters.toUserId
+    const sessionId = event.pathParameters?.sessionId as string
+    const toUserId = event.pathParameters?.toUserId as string
     const jwtPayload = extractJwtFromEvent(event)
     if (jwtPayload === null) {
       return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
