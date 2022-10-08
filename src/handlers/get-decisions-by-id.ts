@@ -6,8 +6,8 @@ import status from '../utils/status'
 
 export const getDecisionsByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
-  const sessionId = event.pathParameters.sessionId
-  const userId = event.pathParameters.userId
+  const sessionId = event.pathParameters?.sessionId as string
+  const userId = event.pathParameters?.userId as string
 
   const jwtPayload = extractJwtFromEvent(event)
   if (jwtPayload && jwtPayload.phone_number !== userId) {

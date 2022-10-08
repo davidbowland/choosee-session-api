@@ -20,7 +20,7 @@ const fetchDataThenDelete = async (sessionId: string): Promise<APIGatewayProxyRe
 
 export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<Session>> => {
   log('Received event', { ...event, body: undefined })
-  const sessionId = event.pathParameters.sessionId
+  const sessionId = event.pathParameters?.sessionId as string
   const result = await fetchDataThenDelete(sessionId)
   return result
 }

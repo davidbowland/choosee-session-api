@@ -51,7 +51,7 @@ export const getDecisionById = (sessionId: string, userId: string): Promise<Deci
       TableName: dynamodbDecisionTableName,
     })
     .promise()
-    .then((response) => response.Item.Data.S)
+    .then((response: any) => response.Item.Data.S)
     .then(JSON.parse)
     .catch(() => ({ decisions: [] }))
 
@@ -66,7 +66,7 @@ export const getSessionById = (sessionId: string): Promise<Session> =>
       TableName: dynamodbSessionTableName,
     })
     .promise()
-    .then((response) => response.Item.Data.S)
+    .then((response: any) => response.Item.Data.S)
     .then(JSON.parse)
 
 /* Query for user IDs by session */
@@ -84,7 +84,7 @@ export const queryUserIdsBySessionId = (sessionId: string): Promise<string[]> =>
       TableName: dynamodbDecisionTableName,
     })
     .promise()
-    .then((response) => response.Items.map((item) => item.UserId.S))
+    .then((response: any) => response.Items.map((item: any) => item.UserId.S))
 
 /* Scan for expired items */
 
@@ -104,12 +104,15 @@ export const scanExpiredSessionIds = (): Promise<string[]> =>
       TableName: dynamodbSessionTableName,
     })
     .promise()
-    .then((response) => response.Items.map((item) => item.SessionId.S))
+    .then((response: any) => response.Items.map((item: any) => item.SessionId.S))
 
 /* Scan for all items */
 
 const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): SessionBatch[] =>
-  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.SessionId.S }))
+  response.Items?.map((item) => ({
+    data: JSON.parse(item.Data.S as string),
+    id: item.SessionId.S as string,
+  })) as SessionBatch[]
 
 export const scanSessions = (): Promise<SessionBatch[]> =>
   dynamodb
@@ -118,7 +121,7 @@ export const scanSessions = (): Promise<SessionBatch[]> =>
       TableName: dynamodbSessionTableName,
     })
     .promise()
-    .then((response) => getItemsFromScan(response))
+    .then((response: any) => getItemsFromScan(response))
 
 /* Set item */
 

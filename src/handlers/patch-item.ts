@@ -44,7 +44,7 @@ const patchById = async (
     }
     try {
       return await applyJsonPatch(session, sessionId, patchOperations)
-    } catch (error) {
+    } catch (error: any) {
       return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
     }
   } catch {
@@ -55,13 +55,13 @@ const patchById = async (
 export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const sessionId = event.pathParameters.sessionId
+    const sessionId = event.pathParameters?.sessionId as string
     const jwtPayload = extractJwtFromEvent(event)
     const subject = jwtPayload === null ? undefined : jwtPayload.sub
     const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(sessionId, patchOperations, subject)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }
