@@ -59,6 +59,25 @@ const createNewSession = async (newSession: NewSession, owner?: string): Promise
 }
 
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
+  try {
+    const newSession = extractNewSessionFromEvent(event)
+    const jwtPayload = extractJwtFromEvent(event)
+    return await createNewSession(newSession, jwtPayload === null ? undefined : jwtPayload.sub)
+  } catch (error: any) {
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+  }
+}
+
+export const postItemHandlerAuthenticated = async (
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyResultV2<any>> => {
+  log('Received event', { ...event, body: undefined })
+  return await postItemHandler(event)
+}
+
+export const postItemHandlerUnauthenticated = async (
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const score = await getScoreFromEvent(event)
@@ -66,11 +85,9 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
     if (score < 0.7) {
       return status.FORBIDDEN
     }
-
-    const newSession = extractNewSessionFromEvent(event)
-    const jwtPayload = extractJwtFromEvent(event)
-    return await createNewSession(newSession, jwtPayload === null ? undefined : jwtPayload.sub)
-  } catch (error: any) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+  } catch (error) {
+    return status.INTERNAL_SERVER_ERROR
   }
+
+  return await postItemHandler(event)
 }
