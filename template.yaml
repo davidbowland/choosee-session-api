@@ -529,6 +529,7 @@ Resources:
           ID_MAX_LENGTH: 4
           MAPS_API_KEY: !Ref MapsApiKey
           MAPS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, mapsApiUrl]
+          RECAPTCHA_SECRET_KEY: !Ref RecaptchaSecretKey
           SESSION_EXPIRE_HOURS: 24
       Events:
         ApiKey:
