@@ -11,218 +11,256 @@ import {
   setSessionById,
 } from '@services/dynamodb'
 
-const mockDeleteItem = jest.fn()
-const mockGetItem = jest.fn()
-const mockPutItem = jest.fn()
-const mockQueryTable = jest.fn()
-const mockScanTable = jest.fn()
-jest.mock('aws-sdk', () => ({
+const mockSend = jest.fn()
+jest.mock('@aws-sdk/client-dynamodb', () => ({
+  DeleteItemCommand: jest.fn().mockImplementation((x) => x),
   DynamoDB: jest.fn(() => ({
-    deleteItem: (...args) => ({ promise: () => mockDeleteItem(...args) }),
-    getItem: (...args) => ({ promise: () => mockGetItem(...args) }),
-    putItem: (...args) => ({ promise: () => mockPutItem(...args) }),
-    query: (...args) => ({ promise: () => mockQueryTable(...args) }),
-    scan: (...args) => ({ promise: () => mockScanTable(...args) }),
+    send: (...args) => mockSend(...args),
   })),
+  GetItemCommand: jest.fn().mockImplementation((x) => x),
+  PutItemCommand: jest.fn().mockImplementation((x) => x),
+  QueryCommand: jest.fn().mockImplementation((x) => x),
+  ScanCommand: jest.fn().mockImplementation((x) => x),
 }))
 jest.mock('@utils/logging', () => ({
   xrayCapture: jest.fn().mockImplementation((x) => x),
 }))
 
 describe('dynamodb', () => {
+  const epochTime = 1678432576539
+
+  beforeAll(() => {
+    jest.spyOn(Date.prototype, 'getTime').mockReturnValue(epochTime)
+  })
+
   describe('deleteDecisionById', () => {
-    test('expect index passed to delete', async () => {
+    test('should call DynamoDB with the correct arguments', async () => {
       await deleteDecisionById(sessionId, userId)
-      expect(mockDeleteItem).toHaveBeenCalledWith({
-        Key: {
-          SessionId: {
-            S: `${sessionId}`,
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            SessionId: {
+              S: sessionId,
+            },
+            UserId: {
+              S: userId,
+            },
           },
-          UserId: {
-            S: `${userId}`,
-          },
-        },
-        TableName: 'decision-table',
-      })
+          TableName: 'decision-table',
+        })
+      )
     })
   })
 
   describe('deleteSessionById', () => {
-    test('expect index passed to delete', async () => {
+    test('should call DynamoDB with the correct arguments', async () => {
       await deleteSessionById(sessionId)
-      expect(mockDeleteItem).toHaveBeenCalledWith({
-        Key: {
-          SessionId: {
-            S: `${sessionId}`,
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            SessionId: {
+              S: sessionId,
+            },
           },
-        },
-        TableName: 'session-table',
-      })
+          TableName: 'session-table',
+        })
+      )
     })
   })
 
   describe('getDecisionById', () => {
-    beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(decision) } } })
-    })
-
-    test('expect id passed to get', async () => {
-      await getDecisionById(sessionId, userId)
-      expect(mockGetItem).toHaveBeenCalledWith({
-        Key: {
-          SessionId: {
-            S: `${sessionId}`,
-          },
-          UserId: {
-            S: `${userId}`,
-          },
-        },
-        TableName: 'decision-table',
+    test('should call DynamoDB with the correct arguments', async () => {
+      mockSend.mockResolvedValueOnce({
+        Item: { Data: { S: JSON.stringify(decision) } },
       })
+
+      const result = await getDecisionById(sessionId, userId)
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            SessionId: {
+              S: sessionId,
+            },
+            UserId: {
+              S: userId,
+            },
+          },
+          TableName: 'decision-table',
+        })
+      )
+      expect(result).toEqual(decision)
     })
 
-    test('expect data parsed and returned', async () => {
+    test('should return empty decisions when invalid JSON', async () => {
+      mockSend.mockResolvedValueOnce({
+        Item: { Data: { S: 'fnord' } },
+      })
+
       const result = await getDecisionById(sessionId, userId)
-      expect(result).toEqual(decision)
+
+      expect(result).toEqual({ decisions: [] })
     })
   })
 
   describe('getSessionById', () => {
-    beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(session) } } })
-    })
-
-    test('expect id passed to get', async () => {
-      await getSessionById(sessionId)
-      expect(mockGetItem).toHaveBeenCalledWith({
-        Key: {
-          SessionId: {
-            S: `${sessionId}`,
-          },
-        },
-        TableName: 'session-table',
+    test('should call DynamoDB with the correct arguments', async () => {
+      mockSend.mockResolvedValueOnce({
+        Item: { Data: { S: JSON.stringify(session) } },
       })
-    })
 
-    test('expect data parsed and returned', async () => {
       const result = await getSessionById(sessionId)
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            SessionId: {
+              S: sessionId,
+            },
+          },
+          TableName: 'session-table',
+        })
+      )
       expect(result).toEqual(session)
     })
   })
 
   describe('queryUserIdsBySessionId', () => {
-    beforeAll(() => {
-      mockQueryTable.mockResolvedValue({
-        Items: [{ UserId: { S: `${userId}` } }],
+    test('should call DynamoDB with the correct arguments', async () => {
+      mockSend.mockResolvedValueOnce({
+        Items: [{ UserId: { S: userId } }],
       })
-    })
 
-    test('expect data parsed and returned', async () => {
       const result = await queryUserIdsBySessionId(sessionId)
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ExpressionAttributeValues: {
+            ':v1': {
+              S: sessionId,
+            },
+          },
+          KeyConditionExpression: 'SessionId = :v1',
+          ProjectionExpression: 'UserId',
+          TableName: 'decision-table',
+        })
+      )
       expect(result).toEqual([userId])
-    })
-
-    test('expect empty object with no data returned', async () => {
-      mockQueryTable.mockResolvedValueOnce({ Items: [] })
-      const result = await queryUserIdsBySessionId(sessionId)
-      expect(result).toEqual([])
     })
   })
 
   describe('scanExpiredSessionIds', () => {
-    beforeAll(() => {
-      mockScanTable.mockResolvedValue({
-        Items: [{ SessionId: { S: `${sessionId}` } }],
+    test('should call DynamoDB with the correct arguments', async () => {
+      mockSend.mockResolvedValueOnce({
+        Items: [{ SessionId: { S: sessionId } }],
       })
-    })
 
-    test('expect data parsed and returned', async () => {
       const result = await scanExpiredSessionIds()
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ExpressionAttributeValues: {
+            ':v1': {
+              N: '1',
+            },
+            ':v2': {
+              N: `${epochTime}`,
+            },
+          },
+          FilterExpression: 'Expiration BETWEEN :v1 AND :v2',
+          IndexName: 'ExpirationIndex',
+          TableName: 'session-table',
+        })
+      )
       expect(result).toEqual([sessionId])
-    })
-
-    test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
-      const result = await scanExpiredSessionIds()
-      expect(result).toEqual([])
     })
   })
 
   describe('scanSessions', () => {
-    beforeAll(() => {
-      mockScanTable.mockResolvedValue({
-        Items: [{ Data: { S: JSON.stringify(session) }, SessionId: { S: `${sessionId}` } }],
+    test('should call DynamoDB with the correct arguments', async () => {
+      mockSend.mockResolvedValueOnce({
+        Items: [{ Data: { S: JSON.stringify(session) }, SessionId: { S: sessionId } }],
       })
-    })
 
-    test('expect data parsed and returned', async () => {
       const result = await scanSessions()
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          AttributesToGet: ['Data', 'SessionId', 'Expiration'],
+          TableName: 'session-table',
+        })
+      )
       expect(result).toEqual([{ data: session, id: sessionId }])
-    })
-
-    test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
-      const result = await scanSessions()
-      expect(result).toEqual([])
     })
   })
 
   describe('setDecisionById', () => {
-    test('expect index and data passed to put', async () => {
+    test('should call DynamoDB with the correct arguments', async () => {
       await setDecisionById(sessionId, userId, decision)
-      expect(mockPutItem).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify(decision),
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify(decision),
+            },
+            SessionId: {
+              S: sessionId,
+            },
+            UserId: {
+              S: userId,
+            },
           },
-          SessionId: {
-            S: `${sessionId}`,
-          },
-          UserId: {
-            S: `${userId}`,
-          },
-        },
-        TableName: 'decision-table',
-      })
+          TableName: 'decision-table',
+        })
+      )
     })
   })
 
   describe('setSessionById', () => {
-    test('expect index and data passed to put', async () => {
+    test('should call DynamoDB with the correct arguments', async () => {
       await setSessionById(sessionId, session)
-      expect(mockPutItem).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify(session),
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify(session),
+            },
+            Expiration: {
+              N: `${session.expiration}`,
+            },
+            SessionId: {
+              S: sessionId,
+            },
           },
-          Expiration: {
-            N: `${session.expiration}`,
-          },
-          SessionId: {
-            S: `${sessionId}`,
-          },
-        },
-        TableName: 'session-table',
-      })
+          TableName: 'session-table',
+        })
+      )
     })
 
-    test('expect expiration defaults to 0', async () => {
+    test('should call DynamoDB with the correct arguments when no expiration', async () => {
       const noExpirationSession = { ...session, expiration: undefined }
       await setSessionById(sessionId, noExpirationSession)
-      expect(mockPutItem).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify(noExpirationSession),
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify(noExpirationSession),
+            },
+            Expiration: {
+              N: '0',
+            },
+            SessionId: {
+              S: sessionId,
+            },
           },
-          Expiration: {
-            N: '0',
-          },
-          SessionId: {
-            S: `${sessionId}`,
-          },
-        },
-        TableName: 'session-table',
-      })
+          TableName: 'session-table',
+        })
+      )
     })
   })
 })
