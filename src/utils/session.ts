@@ -1,5 +1,5 @@
-import { DecisionObject, Session } from '../types'
 import { advanceRounds, fetchChoices } from '../services/maps'
+import { DecisionObject, Session } from '../types'
 import { getDecisionById, queryUserIdsBySessionId } from '../services/dynamodb'
 
 const areDecisionsComplete = (choiceNames: string[], decisions: DecisionObject): boolean =>
