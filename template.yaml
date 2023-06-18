@@ -143,7 +143,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api delete by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -199,7 +199,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api get all items
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -255,7 +255,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -319,7 +319,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api get decisions by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -383,7 +383,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 512
       Description: choosee-session-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -447,7 +447,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -516,7 +516,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 512
       Description: choosee-session-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -586,7 +586,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 512
       Description: choosee-session-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -655,7 +655,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api post start prune
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -714,7 +714,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: choosee-session-api post send text
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -771,7 +771,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Timeout: 10
       Description: choosee-session-api post send text to
       Policies:
@@ -827,7 +827,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Timeout: 60
       Description: choosee-session-api post update status
       Policies:
