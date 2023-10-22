@@ -12,7 +12,7 @@ const updateDecisionAndSession = async (
   sessionId: string,
   userId: string,
   prevDecision: Decision,
-  updatedDecision: Decision
+  updatedDecision: Decision,
 ): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     log('Updated decision', { prevDecision, sessionId, updatedDecision, userId })
@@ -33,7 +33,7 @@ const updateDecisionAndSession = async (
 const applyJsonPatch = async (
   sessionId: string,
   userId: string,
-  patchOperations: PatchOperation[]
+  patchOperations: PatchOperation[],
 ): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const decision = await getDecisionById(sessionId, userId)
@@ -42,7 +42,7 @@ const applyJsonPatch = async (
         decision,
         patchOperations,
         throwOnInvalidJsonPatch,
-        mutateObjectOnJsonPatch
+        mutateObjectOnJsonPatch,
       ).newDocument
       return await updateDecisionAndSession(sessionId, userId, decision, updatedDecision)
     } catch (error: any) {
@@ -54,7 +54,7 @@ const applyJsonPatch = async (
 }
 
 export const patchDecisionByIdHandler = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {

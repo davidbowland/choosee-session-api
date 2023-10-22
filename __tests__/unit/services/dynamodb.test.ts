@@ -48,7 +48,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'decision-table',
-        })
+        }),
       )
     })
   })
@@ -65,7 +65,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'session-table',
-        })
+        }),
       )
     })
   })
@@ -89,7 +89,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'decision-table',
-        })
+        }),
       )
       expect(result).toEqual(decision)
     })
@@ -121,7 +121,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'session-table',
-        })
+        }),
       )
       expect(result).toEqual(session)
     })
@@ -145,7 +145,7 @@ describe('dynamodb', () => {
           KeyConditionExpression: 'SessionId = :v1',
           ProjectionExpression: 'UserId',
           TableName: 'decision-table',
-        })
+        }),
       )
       expect(result).toEqual([userId])
     })
@@ -172,7 +172,7 @@ describe('dynamodb', () => {
           FilterExpression: 'Expiration BETWEEN :v1 AND :v2',
           IndexName: 'ExpirationIndex',
           TableName: 'session-table',
-        })
+        }),
       )
       expect(result).toEqual([sessionId])
     })
@@ -190,7 +190,7 @@ describe('dynamodb', () => {
         expect.objectContaining({
           AttributesToGet: ['Data', 'SessionId', 'Expiration'],
           TableName: 'session-table',
-        })
+        }),
       )
       expect(result).toEqual([{ data: session, id: sessionId }])
     })
@@ -214,7 +214,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'decision-table',
-        })
+        }),
       )
     })
   })
@@ -237,7 +237,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'session-table',
-        })
+        }),
       )
     })
 
@@ -259,7 +259,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'session-table',
-        })
+        }),
       )
     })
   })

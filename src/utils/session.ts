@@ -23,7 +23,7 @@ export const updateSessionStatus = async (sessionId: string, session: Session): 
   const sessionChoices = await fetchChoices(session.choiceId)
   const choiceNames = sessionChoices.map((value) => value.name)
   const allDecisions = await Promise.all(
-    decisionIds.map((userId) => getDecisionById(sessionId, userId).then((decision) => decision.decisions))
+    decisionIds.map((userId) => getDecisionById(sessionId, userId).then((decision) => decision.decisions)),
   )
   const allDecisionsComplete = allDecisions.every((decisions) => areDecisionsComplete(choiceNames, decisions))
   if (!allDecisionsComplete) {

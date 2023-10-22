@@ -61,7 +61,7 @@ export const formatSession = (session: NewSession): NewSession => {
 
 const parseEventBody = (event: APIGatewayProxyEventV2): unknown =>
   JSON.parse(
-    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
+    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string),
   )
 
 export const extractNewSessionFromEvent = (event: APIGatewayProxyEventV2): NewSession =>
@@ -72,7 +72,7 @@ export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchO
 
 export const extractJwtFromEvent = (event: APIGatewayProxyEventV2): StringObject =>
   jwt.decode(
-    (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer /i, '')
+    (event.headers.authorization || event.headers.Authorization || '').replace(/^Bearer /i, ''),
   ) as StringObject
 
 export const extractTokenFromEvent = (event: APIGatewayProxyEventV2): string =>

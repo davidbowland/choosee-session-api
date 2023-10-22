@@ -10,13 +10,13 @@ import status from '../utils/status'
 const applyJsonPatch = async (
   session: Session,
   sessionId: string,
-  patchOperations: PatchOperation[]
+  patchOperations: PatchOperation[],
 ): Promise<APIGatewayProxyResultV2<any>> => {
   const updatedSession = applyPatch(
     session,
     patchOperations,
     throwOnInvalidJsonPatch,
-    mutateObjectOnJsonPatch
+    mutateObjectOnJsonPatch,
   ).newDocument
   try {
     await setSessionById(sessionId, updatedSession)
@@ -30,7 +30,7 @@ const applyJsonPatch = async (
 const patchById = async (
   sessionId: string,
   patchOperations: PatchOperation[],
-  subject?: string
+  subject?: string,
 ): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const session = await getSessionById(sessionId)

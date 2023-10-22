@@ -4,7 +4,7 @@ import { scanSessions } from '../services/dynamodb'
 import status from '../utils/status'
 
 export const getAllItemsHandler = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2<SessionBatch[]>> => {
   log('Received event', event)
   try {

@@ -38,7 +38,7 @@ describe('post-send-text', () => {
       const result = await postSendTextHandler(event)
       expect(mocked(queue).sendSms).toHaveBeenCalledWith(
         '+15551234567',
-        'Your Choosee session is: http://choosee.bowland.link/s/abc123'
+        'Your Choosee session is: http://choosee.bowland.link/s/abc123',
       )
       expect(result).toEqual(status.NO_CONTENT)
     })

@@ -44,7 +44,7 @@ describe('post-item', () => {
       })
       const result = await postItemHandlerAuthenticated(event)
       expect(result).toEqual(
-        expect.objectContaining({ ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid address' }) })
+        expect.objectContaining({ ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid address' }) }),
       )
     })
 
@@ -73,7 +73,7 @@ describe('post-item', () => {
         expect.objectContaining({
           ...newSession,
           sessionId: 'abc123',
-        })
+        }),
       )
     })
 
@@ -86,7 +86,7 @@ describe('post-item', () => {
           ...newSession,
           owner: 'efd31b67-19f2-4d0a-a723-78506ffc0b7e',
           sessionId: 'abc123',
-        })
+        }),
       )
     })
 
@@ -100,7 +100,7 @@ describe('post-item', () => {
             current: 'finished',
             pageId: 0,
           },
-        })
+        }),
       )
     })
   })
@@ -132,7 +132,7 @@ describe('post-item', () => {
         expect.objectContaining({
           ...newSession,
           sessionId: 'abc123',
-        })
+        }),
       )
     })
   })

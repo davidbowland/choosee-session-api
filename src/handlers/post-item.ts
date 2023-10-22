@@ -69,14 +69,14 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
 }
 
 export const postItemHandlerAuthenticated = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   return await postItemHandler(event)
 }
 
 export const postItemHandlerUnauthenticated = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {

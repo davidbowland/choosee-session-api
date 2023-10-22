@@ -19,7 +19,7 @@ describe('choices', () => {
 
           const body = postAdvanceEndpoint(req.body)
           return res(body ? ctx.json(body) : ctx.status(400))
-        })
+        }),
       )
     })
 
@@ -46,7 +46,7 @@ describe('choices', () => {
 
           const body = postEndpoint(req.body)
           return res(body ? ctx.json(body) : ctx.status(400))
-        })
+        }),
       )
     })
 
@@ -74,7 +74,7 @@ describe('choices', () => {
 
           const body = getEndpoint(req.body)
           return res(body ? ctx.json(body) : ctx.status(400))
-        })
+        }),
       )
     })
 

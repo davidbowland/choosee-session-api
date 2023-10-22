@@ -66,7 +66,7 @@ describe('sessions', () => {
       test('expect status changed to winner enhanced with details', async () => {
         const result = await updateSessionStatus(sessionId, session)
         expect(result).toEqual(
-          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
+          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } }),
         )
       })
 
@@ -78,7 +78,7 @@ describe('sessions', () => {
         }
         const result = await updateSessionStatus(sessionId, decisionMatchSession)
         expect(result).toEqual(
-          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } })
+          expect.objectContaining({ status: { current: 'winner', pageId: 0, winner: winningPlace } }),
         )
       })
 
