@@ -1,7 +1,7 @@
 import { advanceRounds, createChoices, fetchChoices } from '@services/maps'
 import { choice, choiceId, newChoice } from '../__mocks__'
+import { http, HttpResponse, server } from '@setup-server'
 import { mapsApiKey, mapsApiUrl } from '@config'
-import { rest, server } from '@setup-server'
 
 jest.mock('@utils/logging')
 
@@ -11,14 +11,14 @@ describe('choices', () => {
 
     beforeAll(() => {
       server.use(
-        rest.post(`${mapsApiUrl}/choices/:id/advance`, async (req, res, ctx) => {
-          const { id } = req.params
-          if (choiceId !== id || mapsApiKey !== req.headers.get('x-api-key')) {
-            return res(ctx.status(403))
+        http.post(`${mapsApiUrl}/choices/:id/advance`, async ({ params, request }) => {
+          const { id } = params
+          if (choiceId !== id || mapsApiKey !== request.headers.get('x-api-key')) {
+            return new HttpResponse(null, { status: 403 })
           }
 
-          const body = postAdvanceEndpoint(req.body)
-          return res(body ? ctx.json(body) : ctx.status(400))
+          const body = postAdvanceEndpoint()
+          return body ? HttpResponse.json(body) : new HttpResponse(null, { status: 400 })
         }),
       )
     })
@@ -39,13 +39,13 @@ describe('choices', () => {
 
     beforeAll(() => {
       server.use(
-        rest.post(`${mapsApiUrl}/choices`, async (req, res, ctx) => {
-          if (mapsApiKey !== req.headers.get('x-api-key')) {
-            return res(ctx.status(403))
+        http.post(`${mapsApiUrl}/choices`, async ({ request }) => {
+          if (mapsApiKey !== request.headers.get('x-api-key')) {
+            return new HttpResponse(null, { status: 403 })
           }
 
-          const body = postEndpoint(req.body)
-          return res(body ? ctx.json(body) : ctx.status(400))
+          const body = postEndpoint(await request.json())
+          return body ? HttpResponse.json(body) : new HttpResponse(null, { status: 400 })
         }),
       )
     })
@@ -66,14 +66,14 @@ describe('choices', () => {
 
     beforeAll(() => {
       server.use(
-        rest.get(`${mapsApiUrl}/choices/:id`, async (req, res, ctx) => {
-          const { id } = req.params
-          if (choiceId !== id || mapsApiKey !== req.headers.get('x-api-key')) {
-            return res(ctx.status(403))
+        http.get(`${mapsApiUrl}/choices/:id`, async ({ params, request }) => {
+          const { id } = params
+          if (choiceId !== id || mapsApiKey !== request.headers.get('x-api-key')) {
+            return new HttpResponse(null, { status: 403 })
           }
 
-          const body = getEndpoint(req.body)
-          return res(body ? ctx.json(body) : ctx.status(400))
+          const body = getEndpoint()
+          return body ? HttpResponse.json(body) : new HttpResponse(null, { status: 400 })
         }),
       )
     })
