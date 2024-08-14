@@ -209,7 +209,7 @@ Resources:
       Description: choosee-session-api get all items
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref SessionTable
       Environment:
         Variables:
@@ -272,7 +272,7 @@ Resources:
       Description: choosee-session-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref SessionTable
       Environment:
         Variables:
@@ -343,7 +343,7 @@ Resources:
       Description: choosee-session-api get decisions by ID
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref DecisionTable
       Environment:
         Variables:
